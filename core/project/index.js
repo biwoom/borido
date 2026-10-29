@@ -15,6 +15,7 @@ export {
   listProjectRecoveryOperations,
   readProjectTextFile,
   recoverProjectFileOperation,
+  withProjectWriteLock,
   writeProjectTextFile,
 } from "./storage.js";
 export {

@@ -177,6 +177,19 @@ async function withProjectQueue(root, action) {
   }
 }
 
+export async function withProjectWriteLock({ root, programRoot }, action) {
+  if (typeof action !== "function") {
+    throw new ProjectError(
+      "PROJECT_WRITE_ACTION_REQUIRED",
+      "프로젝트 쓰기 잠금에는 실행 함수가 필요합니다.",
+    );
+  }
+  const opened = await openProject({ root, programRoot });
+  return withProjectQueue(opened.project.root, () =>
+    action({ root: opened.project.root, project: opened.project }),
+  );
+}
+
 export async function applyProjectFileChanges({
   root,
   changes,

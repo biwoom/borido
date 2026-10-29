@@ -11,3 +11,13 @@ export {
   urlHistorySchema,
 } from "./schemas.js";
 export { evaluatePublication, selectPublicRecords } from "./visibility.js";
+export {
+  createContent,
+  deleteContent,
+  getContentProject,
+  inspectContentDeletion,
+  readContent,
+  restoreDeletedContent,
+  updateContent,
+} from "./crud.js";
+export { findIncomingReferences, validateContentReferences } from "./references.js";

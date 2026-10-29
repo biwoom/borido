@@ -177,6 +177,17 @@ W05 이후 ID 중심 콘텐츠 엔드포인트도 같은 Host/Origin/세션/본�
 
 `npm run validate -- <project>`는 같은 인덱스를 JSON으로 출력한다. 성공은 종료코드 0, 콘텐츠 검증 오류는 1, 사용법/프로젝트 열기 오류는 2다. 실행 전후 원본 해시가 같아야 하며 저장·마이그레이션·빌드·Git 작업을 섞지 않는다. 저장/복구는 W06, 공개/참조는 W07–W08, 분류 의미 검증은 W09-A, URL 충돌/순환은 W12에서 확장한다.
 
+<a id="w08-content-crud-contract"></a>
+### 3.7 W08 기본 콘텐츠 CRUD·참조 계약
+
+`core/content`는 ID를 입력으로 `createContent`, `readContent`, `updateContent`, `inspectContentDeletion`, `deleteContent`, `restoreDeletedContent`를 제공한다. 생성 대상은 `text`, `story`, `blog`, `page` 네 상위 유형이며 초기 상태는 `draft`다. 경론 생성은 세 기본 영역을 함께 만들고, 이야기·블로그·페이지는 각 고정 본문 파일을 만든다. 경론 내부 구조/문서 변경과 slug/폴더 이동은 W09-B–W10 전에는 이 API 범위가 아니다.
+
+수정은 ID·유형·slug·생성 시각·본문 매핑을 불변으로 두고 W06 SHA-256 리비전과 다중 파일 저장을 사용한다. 적용 직전 프로젝트와 참조를 다시 검사해 동시 삭제/외부 변경을 덮어쓰지 않는다. 생성·삭제·복원은 같은 프로젝트 쓰기 직렬화에 참여한다. 생성 ID는 현재 레코드/미디어뿐 아니라 삭제 보관 manifest의 대상/하위 ID와도 중복될 수 없다.
+
+`validateContentReferences`는 경론의 `related_texts`, 내부 본문 문서의 `related_documents`, 이야기의 `featured_media_id`를 검사한다. 없는 대상이나 잘못된 유형은 오류이며, 공개 원본이 가리키는 비공개 선택 관계는 원본을 지우지 않고 공개 출력 제외 경고를 낸다. 분류 참조의 의미와 공개 차단은 W09-A에서 추가한다.
+
+삭제는 메타데이터 리비전과 대상·경론 하위·외부 참조를 포함한 영향 리비전을 모두 요구한다. 외부 참조를 자동 제거하지 않으며 하나라도 남으면 차단한다. 성공 시 전체 콘텐츠 폴더를 `.borido/trash/{operation-id}/`와 manifest에 보관하고, 원래 경로가 비어 있을 때만 복원한다. 보관소 자동 정리·보존 기간은 아직 정하지 않는다.
+
 <a id="storage"></a>
 ## 4. 저장·다중 파일 변경·복구·이행
 
