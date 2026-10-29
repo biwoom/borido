@@ -9,6 +9,7 @@ import {
 } from "./diagnostics.js";
 import { CONTENT_RECORD_TYPES, schemaValidators } from "./schemas.js";
 import { validateTextBibliography } from "./taxonomy.js";
+import { buildTextTrees } from "./tree.js";
 
 const AREA_CODES = new Set(["translation", "original", "research"]);
 const INTERNAL_TYPES = new Set(["text_area", "tree_node", "text_document"]);
@@ -395,7 +396,47 @@ async function loadContent(root, diagnostics) {
     diagnostics,
     "같은 콘텐츠 유형 안에서 slug가 중복되었습니다.",
   );
+  addDuplicateDiagnostics(
+    records.filter((item) => item.type === "tree_node" && item.text_id && item.area),
+    (item) => `${item.text_id}:${item.area}:${item.slug}`,
+    "DUPLICATE_TREE_NODE_SLUG",
+    diagnostics,
+    "같은 경론 영역에서 구조 노드 slug가 중복되었습니다.",
+  );
+  addDuplicateDiagnostics(
+    records.filter(
+      (item) => item.type === "text_document" && item.text_id && item.area,
+    ),
+    (item) => `${item.text_id}:${item.area}:${item.slug}`,
+    "DUPLICATE_TEXT_DOCUMENT_SLUG",
+    diagnostics,
+    "같은 경론 영역에서 본문 문서 slug가 중복되었습니다.",
+  );
   return records;
+}
+
+async function loadOverviewTexts(root, records, diagnostics) {
+  const result = {};
+  for (const record of records) {
+    if (record.data.body_file !== "_index.md") continue;
+    const path = join(root, record.directory, "_index.md");
+    try {
+      result[record.id] = await readFile(path, "utf8");
+    } catch (error) {
+      if (error?.code === "ENOENT") continue;
+      diagnostics.push(
+        diagnostic({
+          code: "OVERVIEW_FILE_UNREADABLE",
+          path: relativePath(root, path),
+          recordId: record.id,
+          field: "body_file",
+          message: "개요 파일을 읽을 수 없습니다.",
+          details: { reason: error.code ?? "UNKNOWN" },
+        }),
+      );
+    }
+  }
+  return result;
 }
 
 async function loadMedia(root, projectFiles, diagnostics) {
@@ -616,6 +657,11 @@ export async function indexProjectContent({ root }) {
   }
 
   const records = await loadContent(projectRoot, diagnostics);
+  const overviewTextById = await loadOverviewTexts(
+    projectRoot,
+    records,
+    diagnostics,
+  );
   const assets = await loadMedia(projectRoot, projectFiles, diagnostics);
   const taxonomies = await loadTaxonomies(projectRoot, diagnostics);
   const sources = await loadSources(projectRoot, projectFiles, diagnostics);
@@ -632,7 +678,16 @@ export async function indexProjectContent({ root }) {
     "콘텐츠와 미디어를 포함한 프로젝트 UUID가 중복되었습니다.",
   );
 
-  const index = { records, assets, taxonomies, sources, url_history: urlHistory };
+  const trees = buildTextTrees(records, overviewTextById);
+  const index = {
+    records,
+    assets,
+    taxonomies,
+    sources,
+    overview_text_by_id: overviewTextById,
+    trees,
+    url_history: urlHistory,
+  };
   const bibliography = validateTextBibliography(index);
   diagnostics.push(...bibliography.diagnostics);
 

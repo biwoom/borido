@@ -23,3 +23,4 @@ export {
 } from "./crud.js";
 export { findIncomingReferences, validateContentReferences } from "./references.js";
 export { validateTextBibliography } from "./taxonomy.js";
+export { buildTextTrees } from "./tree.js";

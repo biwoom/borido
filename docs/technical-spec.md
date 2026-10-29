@@ -197,6 +197,13 @@ W05 이후 ID 중심 콘텐츠 엔드포인트도 같은 Host/Origin/세션/본�
 
 기본 운영 `project/config/sources.json`에는 CBETA, 고려대장경 지식베이스, GRETIL, VRI CST의 제공처 프로필만 둔다. 이는 원문 재배포 허가나 전체 서지 검증을 의미하지 않는다. 고려대장경 현행 서비스/조건과 GRETIL·CST 개별 자료 이용 범위는 실제 수록 전에 다시 확인한다. 자동 fixture는 합성을 유지하며 CBETA T01n0002 공식 XML 헤더의 메타데이터만 별도 격리 검증한다.
 
+<a id="w09b-tree-contract"></a>
+### 3.9 W09-B 독립 트리·개요 로딩 계약
+
+`buildTextTrees`는 폴더에서 해석된 `parent_id`, `text_id`, `area`를 사용해 경론별 `translation`·`original`·`research` 트리를 각각 만든다. 구조/본문은 `order` 오름차순, 동률은 UUID 순으로 안정 정렬한다. 한 영역의 깊이·노드·본문 수를 다른 영역에 복제하거나 위치만으로 대응 문서를 추정하지 않는다.
+
+경론·영역·구조의 선택 `_index.md`만 소유 개요로 읽고 실제 `text_document` 본문과 구분한다. 인덱스는 `overview_text_by_id`와 직렬화 가능한 `trees`를 제공한다. 본문 자식, 없는/잘못된 부모, 세 영역 누락/불일치, 본문 파일 누락과 같은 기존 진단에 더해 같은 경론/영역 전체의 구조 slug와 본문 slug 중복을 오류로 보고한다.
+
 <a id="storage"></a>
 ## 4. 저장·다중 파일 변경·복구·이행
 

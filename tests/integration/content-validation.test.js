@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   cp,
+  mkdir,
   mkdtemp,
   readFile,
   readdir,
@@ -107,6 +108,15 @@ describe("W05 project content validation", () => {
       parent_id: "10000000-0000-4000-8000-000000000002",
       text_id: "10000000-0000-4000-8000-000000000001",
       area: "translation",
+    });
+    expect(report.index.trees[0]).toMatchObject({
+      text_id: "10000000-0000-4000-8000-000000000001",
+      overview: expect.stringContaining("합성 경론 개요"),
+      areas: {
+        translation: { area: "translation" },
+        original: { area: "original" },
+        research: { area: "research" },
+      },
     });
     expect(after).toBe(before);
   });
@@ -217,6 +227,39 @@ describe("W05 project content validation", () => {
         "ORDER_TIE",
         "CONTENT_TYPES_POLICY_DEFERRED",
       ]),
+    );
+  });
+
+  it("reports duplicate structure slugs across different parents in one area", async () => {
+    const root = await fixtureCopy();
+    const translation = join(root, "content", "texts", "synthetic-text", "translation");
+    for (const [folder, id] of [
+      ["first-node", "70000000-0000-4000-8000-000000000001"],
+      ["second-node", "70000000-0000-4000-8000-000000000002"],
+    ]) {
+      const directory = join(translation, folder);
+      await mkdir(directory);
+      await writeFile(
+        join(directory, "_node.json"),
+        `${JSON.stringify({
+          schema_version: 1,
+          id,
+          type: "tree_node",
+          title: folder,
+          slug: "duplicate-node",
+          status: "draft",
+          created_at: "2026-10-29T00:00:00Z",
+          updated_at: "2026-10-29T00:00:00Z",
+          order: folder === "first-node" ? 10 : 20,
+          node_kind: "section",
+        }, null, 2)}\n`,
+        "utf8",
+      );
+    }
+    const report = await indexProjectContent({ root });
+    expect(report.ok).toBe(false);
+    expect(report.diagnostics).toContainEqual(
+      expect.objectContaining({ code: "DUPLICATE_TREE_NODE_SLUG" }),
     );
   });
 
