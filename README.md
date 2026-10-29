@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **설계와 개발 준비 문서만 존재한다. 기능 구현 전이다.** 통합 문서를 GitHub 저장소에 기록한다. 패키지 설치와 사이트 배포는 수행하지 않았다.
+- 현재 상태: **W01 프로젝트 기반 완료, 제품 기능 구현 전이다.** Node/npm·ESM·패키지 잠금·테스트 러너 기반을 마련했다. 사이트 배포는 수행하지 않았다.
 
 ## 문서 읽기
 
@@ -28,6 +28,13 @@
 
 ## 실행 상태
 
-Node.js 24 LTS·npm·ES Modules, 기본 HTTP 서버와 바닐라 UI를 채택했다. 설치와 버전 조합 검증은 이후 개발 작업에서 수행한다.
+Node.js 24 LTS·npm·ES Modules, 기본 HTTP 서버와 바닐라 UI를 채택했다. W01 검증 기준은 Node.js 24.22.2와 npm 11.14.1이며 `.nvmrc`와 `.node-version`에 기록했다. 현재 개발 컴퓨터의 기본 Node.js 25는 지원 범위가 아니므로 Node 24 환경을 선택해야 한다.
 
-`dev`, `validate`, `build`, `test`, `test:e2e`는 채택한 **예정 스크립트 이름**이다. 현재 `package.json`과 구현이 없어 실행할 수 없다. 다음 개발 작업은 [W01](docs/development-plan.md#phase1)의 환경·명령 기반이며, 문서 통합 승인은 기능 구현이나 실제 배포 실행 승인을 뜻하지 않는다.
+```sh
+npm ci
+npm run check
+npm test
+npm run test:e2e
+```
+
+`check`는 지원 Node/npm 환경을 검사한다. `test`와 `test:e2e`는 현재 W01 기반과 패키지 조합만 검증하며 제품 브라우저 기능 검증은 아니다. `dev`, `validate`, `build`는 해당 기능이 아직 없어 제공하지 않는다. 다음 개발 작업은 [W02](docs/development-plan.md#phase1)의 사용자 프로젝트/설정 계약이다.

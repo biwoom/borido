@@ -1,0 +1,30 @@
+{
+  "name": "borido",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local-first Buddhist text editor and static site generator",
+  "type": "module",
+  "packageManager": "npm@11.14.1",
+  "engines": {
+    "node": ">=24.11.0 <25",
+    "npm": ">=11 <12"
+  },
+  "scripts": {
+    "check": "node scripts/check-environment.mjs",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "basecoat-css": "1.1.0",
+    "markdown-it": "15.0.3",
+    "markdown-it-footnote": "4.0.0",
+    "nunjucks": "3.2.4",
+    "sanitize-html": "2.18.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "vitest": "5.0.5"
+  }
+}

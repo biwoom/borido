@@ -52,6 +52,26 @@ Core는 UI/프런트엔드 라이브러리를 모르고 편집기·CLI·생성�
 
 정확한 Node/npm·패키지 패치 버전, 라이선스·전이 의존성·취약점·ESM/기능 호환은 W01 및 해당 도입 단계에서 확인하고 잠금 파일로 관리한다(R01). ‘채택’은 설치/전체 조합 테스트 통과를 뜻하지 않는다. 라이브러리 추가는 실제 필요·내장 대안·라이선스·유지보수·보안·호환을 평가하며 편의만으로 중복 도구를 추가하지 않는다.
 
+<a id="w01-environment"></a>
+### 2.1 W01 검증 기준
+
+2026-10-29 W01에서 Node.js 24.22.2 LTS와 npm 11.14.1을 기준으로 `package-lock.json`을 생성했다. `package.json`은 Node 24 LTS와 npm 11만 허용하며 `.npmrc`가 엔진 불일치 설치를 차단한다. 당시 개발 컴퓨터의 기본 Node 25.2.1은 검증에 사용하지 않고 임시 Node 24 환경에서 잠금 설치와 명령을 실행했다.
+
+|패키지|고정 버전|용도|라이선스|
+|---|---:|---|---|
+|Ajv|8.20.0|스키마 검증|MIT|
+|Basecoat CSS|1.1.0|기본 Vega CSS/필요 UI JS|MIT|
+|markdown-it|15.0.3|Markdown 변환|MIT|
+|markdown-it-footnote|4.0.0|각주 구문|MIT|
+|Nunjucks|3.2.4|정적 템플릿|BSD-2-Clause|
+|sanitize-html|2.18.1|HTML 정화|MIT|
+|Vitest|5.0.5|단위/통합 테스트|MIT|
+|Playwright Test|1.64.1|브라우저 흐름 테스트|Apache-2.0|
+
+잠금 재설치 69개 패키지와 `npm audit --audit-level=low`에서 알려진 취약점 0건을 확인했다. Markdown/각주→정화, Ajv, Nunjucks, Basecoat CSS 해석을 한 Node 24 ESM 프로세스에서 검사했다. 이 결과는 구체적인 스키마·정화 허용 목록·템플릿이나 브라우저 제품 기능의 통과 증거가 아니다.
+
+검증 환경은 macOS Darwin 24.4.0 x86_64, Git 2.39.5, GitHub CLI 2.94.0이다. Windows/Linux와 실제 Chromium/Firefox/WebKit 브라우저 바이너리는 아직 검증하지 않았다. 패키지를 실제로 사용하는 W05·W11 및 브라우저 작업에서 호환성·취약점·지원 범위를 다시 확인한다.
+
 로컬 편집기 최초 검증 환경은 macOS다. Windows/Linux 지원은 실제 검증 후 표시한다. 공개 사이트는 Chromium/Firefox/WebKit 자동 검증과 실제 Safari/모바일 확인을 목표로 한다. 지원 OS/브라우저 버전 범위는 검증 기록으로 확정하며 에뮬레이션을 실제 기기 통과로 보고하지 않는다.
 
 Basecoat의 소스 CSS/Tailwind 빌드와 이미 컴파일된 배포 파일을 구분한다. 기본 배포 CSS를 제공하는 것으로 시작하고 vendor를 수정하지 않는다. 보리도 공통/컴포넌트 CSS를 따로 유지한다. 필요 전에는 Tailwind 전체 빌드·모든 컴포넌트 JS·React/Vue/TypeScript를 추가하지 않는다.
@@ -180,7 +200,7 @@ gh/Git의 실제 자격 증명 관리 환경을 사용하며 모든 OS에서 반
 <a id="tests"></a>
 ## 9. 명령·테스트·개발 완료
 
-예정 스크립트 이름은 `dev`, `validate`, `build`, `test`, `test:e2e`다. 배포/복구/이행은 별도 작업이며 `build`에 섞지 않는다. 실제 기능이 연결된 시점부터 스크립트를 제공하고 성공하는 빈 대체 명령을 만들지 않는다. 현재 `package.json`이 없어 실행 불가다.
+예정 제품 스크립트 이름은 `dev`, `validate`, `build`이고 해당 기능이 연결된 시점부터 제공한다. W01에서는 `check`, `test`, `test:e2e`가 실제 환경/호환성과 러너 기반을 검사한다. `test:e2e`의 현재 한 사례는 Playwright 러너 확인이며 제품 브라우저 검증이 아니다. 배포/복구/이행은 별도 작업이며 `build`에 섞지 않는다. 성공하는 빈 대체 명령을 만들지 않는다.
 
 - 단위/통합: Core/주소/상태/각주·실제 임시 파일 왕복·빌드 실패 보존. GitHub/외부 API 없이 실행.
 - 브라우저: 최초 실행·편집/저장·트리/독서·반응형·해시/브라우저 이력·JS 비활성·초점/키보드·인증 오류 안내.
