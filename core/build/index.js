@@ -18,6 +18,7 @@ import { createAssetResolver, selectPublicMedia } from "../media/index.js";
 import { openProject, ProjectError, resolveProjectPath } from "../project/index.js";
 import { generateStaticSite } from "../site/index.js";
 import { buildUrlIndex, buildUrlRedirects, createDocumentResolver } from "../url/index.js";
+import { auditStagedOutput, auditStaticOutput, privateOutputTokens } from "./audit.js";
 
 const PROGRAM_SITE_ROOT = fileURLToPath(new URL("../../site/", import.meta.url));
 const SOURCE_DIRECTORIES = ["content", "config", "media"];
@@ -67,7 +68,7 @@ export async function snapshotBuildInputs(root) {
   return { sha256: digest(JSON.stringify(entries)), files: entries };
 }
 
-async function loadPublicBodies(root, records) {
+async function loadRecordBodies(root, records) {
   const bodies = new Map();
   for (const record of records) {
     if (!record.data?.body_file) {
@@ -211,7 +212,8 @@ export async function buildProject({ root, hooks = {} }) {
     baseUrl: site.base_url,
   });
   const redirectResult = buildUrlRedirects(indexed.index, urlIndex);
-  const bodies = await loadPublicBodies(projectRoot, publication.public_records);
+  const allBodies = await loadRecordBodies(projectRoot, indexed.index.records);
+  const bodies = new Map(publication.public_records.map((record) => [record.id, allBodies.get(record.id) ?? ""]));
   const markdown = compileMarkdown({ records: publication.public_records, bodies, urlIndex, index: indexed.index });
   const media = await selectPublicMedia({
     root: projectRoot,
@@ -237,6 +239,19 @@ export async function buildProject({ root, hooks = {} }) {
     ...media.diagnostics,
     ...generated.diagnostics,
   ];
+  const privateTokens = privateOutputTokens({
+    index: indexed.index,
+    publicRecordIds: publication.public_records.map((record) => record.id),
+    publicAssetIds: media.copy_plan.map((asset) => asset.id),
+    bodiesById: allBodies,
+  });
+  const audit = auditStaticOutput({
+    files: generated.files,
+    mediaPlan: media.copy_plan,
+    allowedSourceIds: urlIndex.entries.map((entry) => entry.id),
+    privateTokens,
+  });
+  diagnostics.push(...audit.diagnostics);
   if (hasErrors(diagnostics)) {
     return { ok: false, phase: "generation", diagnostics };
   }
@@ -247,6 +262,18 @@ export async function buildProject({ root, hooks = {} }) {
   await mkdir(stageRoot);
   try {
     await writeStage(stageRoot, generated.files, media.copy_plan, projectRoot);
+    const stagedAudit = await auditStagedOutput({
+      root: stageRoot,
+      expectedPaths: audit.expected_paths,
+      privateTokens,
+    });
+    if (!stagedAudit.ok) {
+      throw new ProjectError(
+        "BUILD_OUTPUT_AUDIT_FAILED",
+        "임시 공개 결과의 누출 또는 파일 무결성 검사가 실패했습니다.",
+        { diagnostics: stagedAudit.diagnostics },
+      );
+    }
     const output = await snapshotOutputs(stageRoot);
     await hooks?.beforeInputCheck?.();
     const currentInput = await snapshotBuildInputs(projectRoot);

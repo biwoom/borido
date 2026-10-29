@@ -55,3 +55,8 @@ export {
   plainText,
 } from "../site/index.js";
 export { buildProject, snapshotBuildInputs } from "../build/index.js";
+export {
+  auditStagedOutput,
+  auditStaticOutput,
+  privateOutputTokens,
+} from "../build/audit.js";
