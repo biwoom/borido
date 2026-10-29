@@ -34,3 +34,4 @@ export {
   restoreTreeOperation,
   treeRecordUrl,
 } from "./tree-mutations.js";
+export { automaticAnchor, renderMarkdown, SANITIZE_OPTIONS } from "../markdown/index.js";
