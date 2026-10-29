@@ -98,6 +98,8 @@ describe("W05 project content validation", () => {
       taxonomies: 1,
       sources: 1,
       url_history_entries: 0,
+      public_urls: 0,
+      redirects: 0,
       errors: 0,
       warnings: 0,
     });
@@ -260,6 +262,24 @@ describe("W05 project content validation", () => {
     expect(report.ok).toBe(false);
     expect(report.diagnostics).toContainEqual(
       expect.objectContaining({ code: "DUPLICATE_TREE_NODE_SLUG" }),
+    );
+  });
+
+  it("rejects slugs reserved for generated URL namespaces", async () => {
+    const root = await fixtureCopy();
+    const textPath = join(root, "content", "texts", "synthetic-text", "meta.json");
+    const text = JSON.parse(await readFile(textPath, "utf8"));
+    text.slug = "categories";
+    await writeFile(textPath, `${JSON.stringify(text, null, 2)}\n`, "utf8");
+
+    const report = await indexProjectContent({ root });
+    expect(report.ok).toBe(false);
+    expect(report.diagnostics).toContainEqual(
+      expect.objectContaining({
+        code: "CONTENT_SLUG_RESERVED",
+        record_id: text.id,
+        field: "slug",
+      }),
     );
   });
 

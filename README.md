@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **W01–W11 완료.** 다중 문헌 출처·독립 트리와 안전한 변경, Markdown·앵커·각주·HTML 정화를 구현했다. URL/미디어 해석·정적 사이트 생성과 배포는 아직 없다.
+- 현재 상태: **W01–W12 완료.** 독립 트리와 안전한 변경, Markdown·각주·정화, 고유 URL·ID/앵커 링크와 정적 이력 리디렉션을 구현했다. 미디어 선별·정적 사이트 생성과 배포는 아직 없다.
 
 ## 문서 읽기
 
@@ -68,4 +68,4 @@ npm run dev -- --project /absolute/user-project
 
 화면에서 사이트명·설명·언어·시간대·작성자·라이선스·공개 URL을 확인하고 명시적으로 저장한다. GitHub 연결 없이 오프라인으로 시작할 수 있으며 초기화 후 경론 목록 자리로 이동한다. 경로 선택은 실행 인자로만 고정하고 화면에서 다른 루트로 바꾸지 않는다. 계약은 [W03 서버](docs/technical-spec.md#w03-server-contract)와 [W04 UI](docs/technical-spec.md#w04-admin-contract)를 따른다.
 
-W05–W10은 콘텐츠 기반·다중 문헌 출처, 독립 트리와 안전한 변경/복구를 제공한다. W11은 다국어 제목 앵커, 각주 왕복, 내부 참조 토큰과 안전한 Markdown HTML을 제공한다. 다음 작업은 W12 URL·문서 링크·이력이다.
+W05–W10은 콘텐츠·트리와 안전한 변경/복구를, W11은 안전한 Markdown HTML을 제공한다. W12는 공개 ID·앵커를 `/` 또는 배포 접두 URL로 해석하고 유효한 과거 경로를 현재 대상으로 직접 연결한다. 다음 작업은 W13 미디어 해석·선별이다.

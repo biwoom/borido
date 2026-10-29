@@ -10,6 +10,8 @@ import {
 import { CONTENT_RECORD_TYPES, schemaValidators } from "./schemas.js";
 import { validateTextBibliography } from "./taxonomy.js";
 import { buildTextTrees } from "./tree.js";
+import { selectPublicRecords } from "./visibility.js";
+import { buildUrlIndex, buildUrlRedirects } from "../url/index.js";
 
 const AREA_CODES = new Set(["translation", "original", "research"]);
 const INTERNAL_TYPES = new Set(["text_area", "tree_node", "text_document"]);
@@ -311,6 +313,25 @@ function validateOrderTies(records, diagnostics) {
   }
 }
 
+function validateReservedSlugs(records, diagnostics) {
+  for (const record of records) {
+    const reserved =
+      (record.type === "text" && record.slug === "categories") ||
+      (record.type === "text_document" && record.slug === "nodes");
+    if (!reserved) continue;
+    diagnostics.push(
+      diagnostic({
+        code: "CONTENT_SLUG_RESERVED",
+        path: record.path,
+        recordId: record.id,
+        field: "slug",
+        message: "시스템 공개 경로에 예약된 slug를 사용할 수 없습니다.",
+        details: { slug: record.slug },
+      }),
+    );
+  }
+}
+
 async function loadContent(root, diagnostics) {
   const files = await walk(root, join(root, "content"), diagnostics);
   const fileSet = new Set(files.map((path) => portablePath(path)));
@@ -382,6 +403,7 @@ async function loadContent(root, diagnostics) {
   resolveHierarchy(records, diagnostics);
   validateAreas(records, diagnostics);
   validateOrderTies(records, diagnostics);
+  validateReservedSlugs(records, diagnostics);
   addDuplicateDiagnostics(
     records,
     (item) => item.id,
@@ -636,7 +658,8 @@ export async function indexProjectContent({ root }) {
 
   const sitePath = join(projectRoot, "config", "site.json");
   const rawSite = await readJson(projectRoot, sitePath, diagnostics);
-  if (rawSite && !schemaValidators.site(rawSite)) {
+  const siteValid = rawSite ? schemaValidators.site(rawSite) : false;
+  if (rawSite && !siteValid) {
     diagnostics.push(
       ...diagnosticsFromSchema(schemaValidators.site.errors, {
         path: "config/site.json",
@@ -691,6 +714,31 @@ export async function indexProjectContent({ root }) {
   const bibliography = validateTextBibliography(index);
   diagnostics.push(...bibliography.diagnostics);
 
+  let urlEntries = [];
+  let redirects = [];
+  if (siteValid) {
+    const publication = selectPublicRecords(records, {
+      overviewTextById,
+      blockers: bibliography.blockers,
+    });
+    const urls = buildUrlIndex({
+      index,
+      publicRecords: publication.public_records,
+      basePath: rawSite.base_path,
+      baseUrl: rawSite.base_url,
+    });
+    const urlDiagnostics = urls.diagnostics.filter(
+      (item) => !["RESERVED_TEXT_SLUG", "RESERVED_DOCUMENT_SLUG"].includes(item.code),
+    );
+    diagnostics.push(...urlDiagnostics);
+    const history = buildUrlRedirects(index, urls);
+    diagnostics.push(...history.diagnostics);
+    urlEntries = urls.entries;
+    redirects = history.redirects;
+  }
+  index.url_entries = urlEntries;
+  index.redirects = redirects;
+
   sortDiagnostics(diagnostics);
   const errors = diagnostics.filter((item) => item.level === "error").length;
   const warnings = diagnostics.filter((item) => item.level === "warning").length;
@@ -707,6 +755,8 @@ export async function indexProjectContent({ root }) {
       taxonomies: taxonomies.length,
       sources: sources.length,
       url_history_entries: urlHistory.length,
+      public_urls: urlEntries.length,
+      redirects: redirects.length,
       errors,
       warnings,
     },

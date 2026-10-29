@@ -35,3 +35,12 @@ export {
   treeRecordUrl,
 } from "./tree-mutations.js";
 export { automaticAnchor, renderMarkdown, SANITIZE_OPTIONS } from "../markdown/index.js";
+export {
+  absolutePublicUrl,
+  buildUrlIndex,
+  buildUrlRedirects,
+  createDocumentResolver,
+  internalRecordPath,
+  staticRedirectHtml,
+  withBasePath,
+} from "../url/index.js";
