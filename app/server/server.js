@@ -39,6 +39,13 @@ const ADMIN_ASSETS = new Map([
     },
   ],
   [
+    "/assets/tokens.css",
+    {
+      path: fileURLToPath(new URL("../admin/styles/tokens.css", import.meta.url)),
+      type: "text/css; charset=utf-8",
+    },
+  ],
+  [
     "/assets/admin.css",
     {
       path: fileURLToPath(new URL("../admin/styles/admin.css", import.meta.url)),

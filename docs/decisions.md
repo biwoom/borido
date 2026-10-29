@@ -24,7 +24,7 @@ D01–D22의 추천 방향을 모두 채택했다. **채택은 구현/테스트 
 |D11|중앙 자산 목록·UUID/asset: 참조·기본 private·필요한 공개 자산만 출력·이동 시 ID 유지·초기 업로드 범위 제한|[미디어](content-spec.md#media)|W13·W16·W25; R02|
 |D12|원 목차/SAT/CBETA 대조·출처/검증 상태·필요한 한 경론부터·최소 서지. 예시를 공식 자료로 취급하지 않음|[분류](content-spec.md#taxonomy)|W09-A·W27; R03|
 |D13|전체 기본 무결성과 공개 완전성 분리·명시적 심각도·직렬 변경/입력 스냅샷·임시 출력·정상 결과 보존|[검증](technical-spec.md#validation), [빌드](technical-spec.md#build)|W05–W07·W11–W16|
-|D14|Basecoat Vega 하나·로컬 배포 CSS/필요 JS·별도 보리도 CSS·트리 240px·나머지 치수/글꼴 실측. 디자인 기반 먼저 단순화|[디자인](ui-spec.md#design), [환경](technical-spec.md#runtime)|W01·W04·W17–W20; R04|
+|D14|Basecoat Vega 하나·로컬 배포 CSS/필요 JS·별도 토큰/보리도 CSS. 검정·흰색 기반, 황금 `#f0b100` 주 강조, 연두 `#00c951` 보조 강조와 단순한 shadcn/ui 계열 표현. 트리 240px·나머지 치수/글꼴 실측|[디자인](ui-spec.md#design), [환경](technical-spec.md#runtime)|W01·W04·W17–W20; R04|
 |D15|정적 JSON·정규화 포함 검색·제목 우선/안정 정렬·현재 공개 사이트맵. 외부 검색 실행 의존 없음|[검색](content-spec.md#search), [검색 UI](ui-spec.md#search)|W14·W22; R02·R06|
 |D16|트리/목차/각주/자료/이전다음 우선·기본 인쇄 CSS·원본 링크 조건부·복사/다운로드 등 후속. 독서 필수 범위 명료화|[읽기](ui-spec.md#reader), [범위](product.md)|W18–W21·W26·W29|
 |D17|미저장 메모리 미리보기·마지막 빌드와 구분·같은 변환/템플릿·공개 출력과 격리. 원본/상태/원격 변경 없음|[변환/미리보기](technical-spec.md#rendering)|W24·W16|

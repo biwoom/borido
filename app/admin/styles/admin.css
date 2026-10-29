@@ -1,17 +1,11 @@
 :root {
-  --borido-ink: #18221d;
-  --borido-muted: #647069;
-  --borido-paper: #f7f5ee;
-  --borido-surface: #fffef9;
-  --borido-line: #dedbd0;
-  --borido-deep: #183b32;
-  --borido-deep-2: #245548;
-  --borido-gold: #b58a3b;
-  --borido-soft: #e9eee9;
-  --borido-danger: #9f3f37;
-  --borido-shadow: 0 18px 50px rgb(24 34 29 / 8%);
-  font-family:
-    Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --borido-paper: var(--borido-bg);
+  --borido-line: var(--borido-border);
+  --borido-deep: var(--borido-ink);
+  --borido-deep-2: var(--borido-ink-2);
+  --borido-gold: var(--borido-accent);
+  --borido-soft: var(--borido-surface-2);
+  font-family: var(--borido-font-sans);
 }
 
 * {
@@ -26,9 +20,12 @@ body {
 body {
   margin: 0;
   color: var(--borido-ink);
-  background:
-    radial-gradient(circle at 80% 0%, rgb(181 138 59 / 10%), transparent 34rem),
-    var(--borido-paper);
+  background: var(--borido-paper);
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -49,7 +46,7 @@ textarea {
   padding: 0.65rem 0.9rem;
   color: white;
   background: var(--borido-deep);
-  border-radius: 0.45rem;
+  border-radius: var(--borido-radius-sm);
   transform: translateY(-160%);
 }
 
@@ -69,8 +66,8 @@ textarea {
 
 .centered-state h1 {
   margin: 0.55rem 0 0.8rem;
-  font-family: Georgia, "Noto Serif KR", serif;
   font-size: clamp(1.8rem, 5vw, 2.75rem);
+  font-weight: 750;
   letter-spacing: -0.035em;
 }
 
@@ -81,8 +78,8 @@ textarea {
   overflow-wrap: anywhere;
   color: var(--borido-deep);
   background: var(--borido-soft);
-  border: 1px solid #d4ddd5;
-  border-radius: 0.55rem;
+  border: 1px solid var(--borido-border);
+  border-radius: var(--borido-radius);
 }
 
 .state-copy {
@@ -97,12 +94,12 @@ textarea {
   height: 4.5rem;
   display: grid;
   place-items: center;
-  color: #fffdf4;
+  color: #fff;
   background: var(--borido-deep);
-  border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: 50% 50% 47% 53% / 48% 45% 55% 52%;
-  box-shadow: 0 0 0 0.45rem rgb(24 59 50 / 9%);
-  font-family: Georgia, "Noto Serif KR", serif;
+  border: 1px solid var(--borido-ink);
+  border-radius: var(--borido-radius-lg);
+  box-shadow: 0 0 0 0.4rem var(--borido-accent-soft);
+  font-weight: 800;
   font-size: 1.8rem;
 }
 
@@ -110,7 +107,8 @@ textarea {
   width: 2.5rem;
   height: 2.5rem;
   font-size: 1.05rem;
-  box-shadow: none;
+  border-radius: var(--borido-radius);
+  box-shadow: inset 0 -3px 0 var(--borido-accent);
 }
 
 .brand-seal.is-warning {
@@ -119,10 +117,10 @@ textarea {
 
 .eyebrow {
   margin: 1rem 0 0;
-  color: var(--borido-gold);
+  color: var(--borido-accent-ink);
   font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
 }
 
 .muted {
@@ -134,15 +132,16 @@ textarea {
 }
 
 .topbar {
-  min-height: 4.5rem;
+  min-height: 4rem;
   display: grid;
   grid-template-columns: minmax(14rem, 1fr) auto minmax(14rem, 1fr);
   align-items: center;
   gap: 1.5rem;
   padding: 0.75rem 1.25rem;
-  color: #f7f5ee;
-  background: var(--borido-deep);
-  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  color: var(--borido-ink);
+  background: rgb(255 255 255 / 94%);
+  border-bottom: 1px solid var(--borido-border);
+  backdrop-filter: saturate(140%) blur(8px);
 }
 
 .brand-lockup {
@@ -157,13 +156,13 @@ textarea {
 }
 
 .brand-lockup strong {
-  font-family: Georgia, "Noto Serif KR", serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
 .brand-lockup small {
   margin-top: 0.1rem;
-  color: #bdcbc5;
+  color: var(--borido-muted);
   font-size: 0.72rem;
 }
 
@@ -186,18 +185,38 @@ textarea {
 }
 
 .status-pill {
-  color: #d7e4de;
-  background: rgb(255 255 255 / 10%);
+  gap: 0.38rem;
+  color: #006f31;
+  background: var(--borido-secondary-soft);
+  border: 1px solid #b9f5d0;
+}
+
+.status-pill::before {
+  width: 0.38rem;
+  height: 0.38rem;
+  content: "";
+  background: var(--borido-secondary);
+  border-radius: 50%;
 }
 
 .status-pill[data-state="dirty"] {
-  color: #fff1bf;
-  background: rgb(181 138 59 / 28%);
+  color: #6e4e00;
+  background: var(--borido-accent-soft);
+  border-color: #f7db72;
+}
+
+.status-pill[data-state="dirty"]::before {
+  background: var(--borido-accent);
 }
 
 .status-pill[data-state="error"] {
-  color: #ffe0dc;
-  background: rgb(159 63 55 / 42%);
+  color: #8f231f;
+  background: var(--borido-danger-soft);
+  border-color: #f0c6c3;
+}
+
+.status-pill[data-state="error"]::before {
+  background: var(--borido-danger);
 }
 
 .topbar-actions {
@@ -207,9 +226,9 @@ textarea {
 }
 
 .topbar .btn[data-variant="outline"] {
-  color: #f7f5ee;
-  border-color: rgb(255 255 255 / 28%);
-  background: transparent;
+  color: var(--borido-ink);
+  border-color: var(--borido-border-strong);
+  background: var(--borido-surface);
 }
 
 .topbar .btn:disabled {
@@ -217,7 +236,7 @@ textarea {
 }
 
 .workspace {
-  min-height: calc(100vh - 4.5rem);
+  min-height: calc(100vh - 4rem);
   display: grid;
   grid-template-columns: 15rem minmax(0, 1fr);
 }
@@ -226,13 +245,13 @@ textarea {
   display: flex;
   flex-direction: column;
   padding: 1.35rem 0.9rem 1rem;
-  background: #eef0e9;
+  background: var(--borido-surface-3);
   border-right: 1px solid var(--borido-line);
 }
 
 .nav-label {
   margin: 1.1rem 0.65rem 0.45rem;
-  color: #7a827c;
+  color: var(--borido-muted);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -249,32 +268,32 @@ textarea {
   align-items: center;
   gap: 0.8rem;
   padding: 0.65rem 0.75rem;
-  color: #435048;
+  color: var(--borido-ink-2);
   background: transparent;
   border: 0;
-  border-radius: 0.45rem;
+  border-radius: var(--borido-radius-sm);
   cursor: pointer;
   text-align: left;
 }
 
 .nav-item span {
-  color: #87918a;
-  font-family: ui-monospace, monospace;
+  color: var(--borido-subtle);
+  font-family: var(--borido-font-mono);
   font-size: 0.68rem;
 }
 
 .nav-item:hover {
   color: var(--borido-deep);
-  background: rgb(255 255 255 / 55%);
+  background: var(--borido-surface-2);
 }
 
 .nav-item.is-active {
   color: #fff;
-  background: var(--borido-deep-2);
+  background: var(--borido-ink);
 }
 
 .nav-item.is-active span {
-  color: #bed0c8;
+  color: var(--borido-accent);
 }
 
 .sidebar-foot {
@@ -290,7 +309,7 @@ textarea {
 }
 
 .sidebar-foot span {
-  color: #7a827c;
+  color: var(--borido-muted);
   font-size: 0.68rem;
   font-weight: 700;
 }
@@ -305,7 +324,7 @@ textarea {
 
 .sidebar-foot small {
   margin-top: 0.4rem;
-  color: #7a827c;
+  color: var(--borido-muted);
   font-size: 0.68rem;
   line-height: 1.45;
 }
@@ -332,8 +351,8 @@ textarea {
 
 .page-heading h1 {
   margin: 0.35rem 0 0;
-  font-family: Georgia, "Noto Serif KR", serif;
   font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 750;
   letter-spacing: -0.045em;
 }
 
@@ -366,10 +385,10 @@ textarea {
   max-width: 70rem;
   margin: 0 auto 1rem;
   padding: 0.9rem 1rem;
-  color: #782f2a;
-  background: #fff2ef;
-  border: 1px solid #eac8c2;
-  border-radius: 0.55rem;
+  color: #8f231f;
+  background: var(--borido-danger-soft);
+  border: 1px solid #f0c6c3;
+  border-radius: var(--borido-radius);
   line-height: 1.55;
 }
 
@@ -380,27 +399,33 @@ textarea {
   gap: 2rem;
   margin: 1.5rem 0 0;
   padding: 1.2rem 1.35rem;
-  color: #f8f5eb;
-  background: var(--borido-deep);
-  border-radius: 0.7rem;
+  color: #fff;
+  background:
+    linear-gradient(90deg, var(--borido-accent) 0 4px, transparent 4px),
+    var(--borido-ink);
+  border: 1px solid var(--borido-ink);
+  border-radius: var(--borido-radius-lg);
   box-shadow: var(--borido-shadow);
 }
 
 .project-note h2 {
   margin: 0.25rem 0;
-  font-family: Georgia, "Noto Serif KR", serif;
   font-size: 1.3rem;
+}
+
+.project-note .eyebrow {
+  color: var(--borido-accent);
 }
 
 .project-note p:not(.eyebrow) {
   margin: 0;
-  color: #c8d5cf;
+  color: #d4d4d4;
   font-size: 0.85rem;
 }
 
 .project-note code {
   overflow-wrap: anywhere;
-  color: #ffe2a4;
+  color: #ffe58a;
   font-size: 0.78rem;
 }
 
@@ -420,15 +445,14 @@ textarea {
 
 .section-heading > span {
   margin-top: 0.2rem;
-  color: var(--borido-gold);
-  font-family: ui-monospace, monospace;
+  color: var(--borido-accent-ink);
+  font-family: var(--borido-font-mono);
   font-size: 0.72rem;
   font-weight: 700;
 }
 
 .section-heading h2 {
   margin: 0;
-  font-family: Georgia, "Noto Serif KR", serif;
   font-size: 1.2rem;
 }
 
@@ -466,7 +490,7 @@ textarea {
 
 .field b {
   margin-left: 0.25rem;
-  color: var(--borido-gold);
+  color: var(--borido-accent-ink);
   font-size: 0.64rem;
 }
 
@@ -476,8 +500,8 @@ textarea {
   padding: 0.7rem 0.75rem;
   color: var(--borido-ink);
   background: var(--borido-surface);
-  border: 1px solid #cfcbbf;
-  border-radius: 0.45rem;
+  border: 1px solid var(--borido-border-strong);
+  border-radius: var(--borido-radius);
   outline: none;
 }
 
@@ -488,8 +512,8 @@ textarea {
 
 .field input:focus,
 .field textarea:focus {
-  border-color: var(--borido-deep-2);
-  box-shadow: 0 0 0 3px rgb(36 85 72 / 12%);
+  border-color: var(--borido-accent);
+  box-shadow: 0 0 0 3px rgb(240 177 0 / 18%);
 }
 
 .field > small {
@@ -509,9 +533,9 @@ textarea {
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 1rem;
-  background: rgb(255 254 249 / 65%);
+  background: var(--borido-surface);
   border: 1px solid var(--borido-line);
-  border-radius: 0.5rem;
+  border-radius: var(--borido-radius);
 }
 
 .connection-row span,
@@ -544,19 +568,37 @@ textarea {
   gap: 0.65rem;
 }
 
+.form-actions #save-button {
+  color: var(--borido-ink);
+  background: var(--borido-accent);
+  border-color: var(--borido-accent);
+  box-shadow: var(--borido-shadow-sm);
+}
+
+.form-actions #save-button:hover:not(:disabled) {
+  background: #dca300;
+  border-color: #dca300;
+}
+
+.form-actions #save-button:focus-visible {
+  outline: 3px solid rgb(240 177 0 / 28%);
+  outline-offset: 2px;
+}
+
 kbd {
   padding: 0.08rem 0.28rem;
-  background: #efede5;
-  border: 1px solid #d7d3c8;
+  background: var(--borido-surface-2);
+  border: 1px solid var(--borido-border-strong);
   border-radius: 0.25rem;
-  box-shadow: 0 1px 0 #c9c5bb;
-  font-family: ui-monospace, monospace;
+  box-shadow: var(--borido-shadow-sm);
+  font-family: var(--borido-font-mono);
   font-size: 0.68rem;
 }
 
 .phase-badge {
-  color: #745819;
-  background: #f4e7c6;
+  color: #6e4e00;
+  background: var(--borido-accent-soft);
+  border: 1px solid #f7db72;
 }
 
 .empty-state {
@@ -569,15 +611,14 @@ kbd {
 }
 
 .empty-number {
-  color: #c3b994;
-  font-family: Georgia, serif;
+  color: var(--borido-subtle);
+  font-family: var(--borido-font-mono);
   font-size: 4rem;
   line-height: 1;
 }
 
 .empty-state h2 {
   margin: 0.8rem 0 0.45rem;
-  font-family: Georgia, "Noto Serif KR", serif;
   font-size: 1.45rem;
 }
 

@@ -101,6 +101,11 @@ describe("W04 admin bootstrap and first run", () => {
     expect(stylesheet.status).toBe(200);
     expect(stylesheet.headers["content-type"]).toContain("text/css");
 
+    const tokens = await request(local.origin, { path: "/assets/tokens.css" });
+    expect(tokens.status).toBe(200);
+    expect(tokens.text).toContain("--borido-accent: #f0b100");
+    expect(tokens.text).toContain("--borido-secondary: #00c951");
+
     const projectFile = await request(local.origin, { path: "/config/site.json" });
     expect(projectFile.status).toBe(401);
   });
