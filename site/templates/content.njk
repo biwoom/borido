@@ -1,0 +1,11 @@
+{% extends "base.njk" %}
+{% block content %}
+<article>
+  <p class="eyebrow">{{ page.type_label }}{% if page.text_title %} · {{ page.text_title }}{% endif %}</p>
+  <h1>{{ page.title }}</h1>
+  {% if page.description %}<p class="description">{{ page.description }}</p>{% endif %}
+  {% if page.published_at %}<p><time datetime="{{ page.published_at }}">{{ page.published_at }}</time></p>{% endif %}
+  {% if page.tags.length %}<ul class="tags">{% for tag in page.tags %}<li>{{ tag }}</li>{% endfor %}</ul>{% endif %}
+  <div class="prose">{{ page.body_html | safe }}</div>
+</article>
+{% endblock %}

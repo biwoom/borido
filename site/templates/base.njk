@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{ page.description or site.description }}">
+  <link rel="stylesheet" href="{{ site.stylesheet_url }}">
+  <title>{{ page.title }} · {{ site.name }}</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="site-name" href="{{ site.base_path }}">{{ site.name }}</a>
+    <nav aria-label="주요 메뉴">
+      {% for item in navigation %}<a href="{{ item.url }}">{{ item.title }}</a>{% endfor %}
+    </nav>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <footer><p>{{ site.author }}{% if site.license %} · {{ site.license }}{% endif %}</p></footer>
+</body>
+</html>
