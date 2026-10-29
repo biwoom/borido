@@ -22,6 +22,7 @@ import { indexProjectContent } from "./indexer.js";
 import { sortDiagnostics } from "./diagnostics.js";
 import { findIncomingReferences, validateContentReferences } from "./references.js";
 import { CONTENT_SCHEMA_VERSION, schemaValidators } from "./schemas.js";
+import { validateTextBibliography } from "./taxonomy.js";
 
 const TOP_LEVEL_TYPES = new Set(["text", "story", "blog", "page"]);
 const IMMUTABLE_UPDATE_FIELDS = new Set([
@@ -75,7 +76,7 @@ function assertSchema(record) {
 
 function defaultCanon() {
   return {
-    canon_id: "taisho",
+    canon_id: null,
     section_id: null,
     catalog_number: null,
     verification_status: "unverified",
@@ -240,6 +241,35 @@ async function assertProposedReferences(index, record) {
   );
 }
 
+function proposedIndex(index, record) {
+  return {
+    ...index,
+    records: [
+      ...index.records.filter((item) => item.id !== record.id),
+      {
+        id: record.id,
+        type: record.type,
+        status: record.status,
+        path: "(proposed)",
+        parent_id: null,
+        data: record,
+      },
+    ],
+  };
+}
+
+function assertProposedBibliography(index, record) {
+  const result = validateTextBibliography(proposedIndex(index, record));
+  const errors = result.diagnostics.filter((item) => item.level === "error");
+  if (errors.length > 0) {
+    throw new ProjectError(
+      "CONTENT_BIBLIOGRAPHY_INVALID",
+      "경론의 분류·판본 출처가 공개 조건을 충족하지 않습니다.",
+      { diagnostics: errors, blockers: result.blockers },
+    );
+  }
+}
+
 function assertHealthyReport(report) {
   if (!report.ok) {
     throw new ProjectError(
@@ -291,6 +321,7 @@ async function createContentUnlocked({
     await deletedContentIds(opened.project.root),
   );
   await assertProposedReferences(report.index, record);
+  assertProposedBibliography(report.index, record);
   if (type === "text" && slug === "categories") {
     throw new ProjectError(
       "CONTENT_SLUG_RESERVED",
@@ -445,6 +476,7 @@ export async function updateContent({
     },
     record,
   );
+  assertProposedBibliography(report.index, record);
   const fileChanges = [
     {
       path: current.path,
@@ -480,6 +512,7 @@ export async function updateContent({
         },
         record,
       );
+      assertProposedBibliography(latest.index, record);
     },
   });
   return readContent({ root, id, programRoot });

@@ -8,6 +8,7 @@ import {
   sortDiagnostics,
 } from "./diagnostics.js";
 import { CONTENT_RECORD_TYPES, schemaValidators } from "./schemas.js";
+import { validateTextBibliography } from "./taxonomy.js";
 
 const AREA_CODES = new Set(["translation", "original", "research"]);
 const INTERNAL_TYPES = new Set(["text_area", "tree_node", "text_document"]);
@@ -528,6 +529,34 @@ async function loadTaxonomies(root, diagnostics) {
   return taxonomies;
 }
 
+async function loadSources(root, projectFiles, diagnostics) {
+  const sourcePath = join(root, "config", "sources.json");
+  if (!projectFiles.has(portablePath(sourcePath))) return [];
+  const value = await readJson(root, sourcePath, diagnostics);
+  if (!value) return [];
+  if (!schemaValidators.sources(value)) {
+    diagnostics.push(
+      ...diagnosticsFromSchema(schemaValidators.sources.errors, {
+        path: "config/sources.json",
+      }),
+    );
+  }
+  const providers = Array.isArray(value.providers)
+    ? value.providers.map((provider) => ({
+        ...provider,
+        path: "config/sources.json",
+      }))
+    : [];
+  addDuplicateDiagnostics(
+    providers,
+    (item) => item.id,
+    "DUPLICATE_SOURCE_PROVIDER_ID",
+    diagnostics,
+    "디지털 판본 제공처 ID가 중복되었습니다.",
+  );
+  return providers;
+}
+
 async function loadUrlHistory(root, projectFiles, diagnostics) {
   const path = join(root, "config", "url-history.json");
   if (!projectFiles.has(portablePath(path))) return [];
@@ -589,6 +618,7 @@ export async function indexProjectContent({ root }) {
   const records = await loadContent(projectRoot, diagnostics);
   const assets = await loadMedia(projectRoot, projectFiles, diagnostics);
   const taxonomies = await loadTaxonomies(projectRoot, diagnostics);
+  const sources = await loadSources(projectRoot, projectFiles, diagnostics);
   const urlHistory = await loadUrlHistory(projectRoot, projectFiles, diagnostics);
 
   addDuplicateDiagnostics(
@@ -601,6 +631,10 @@ export async function indexProjectContent({ root }) {
     diagnostics,
     "콘텐츠와 미디어를 포함한 프로젝트 UUID가 중복되었습니다.",
   );
+
+  const index = { records, assets, taxonomies, sources, url_history: urlHistory };
+  const bibliography = validateTextBibliography(index);
+  diagnostics.push(...bibliography.diagnostics);
 
   sortDiagnostics(diagnostics);
   const errors = diagnostics.filter((item) => item.level === "error").length;
@@ -616,11 +650,13 @@ export async function indexProjectContent({ root }) {
       records: records.length,
       assets: assets.length,
       taxonomies: taxonomies.length,
+      sources: sources.length,
       url_history_entries: urlHistory.length,
       errors,
       warnings,
     },
     diagnostics,
-    index: { records, assets, taxonomies, url_history: urlHistory },
+    publication_blockers: bibliography.blockers,
+    index,
   };
 }

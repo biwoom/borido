@@ -7,6 +7,7 @@ export {
   mediaAssetsSchema,
   schemaValidators,
   siteSettingsSchema,
+  sourceRegistrySchema,
   taxonomySchema,
   urlHistorySchema,
 } from "./schemas.js";
@@ -21,3 +22,4 @@ export {
   updateContent,
 } from "./crud.js";
 export { findIncomingReferences, validateContentReferences } from "./references.js";
+export { validateTextBibliography } from "./taxonomy.js";

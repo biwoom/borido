@@ -85,7 +85,9 @@ const canonReferenceSchema = {
     "source_references",
   ],
   properties: {
-    canon_id: { const: "taisho" },
+    canon_id: {
+      anyOf: [{ type: "string", pattern: STABLE_ID }, { type: "null" }],
+    },
     section_id: {
       anyOf: [{ type: "string", pattern: STABLE_ID }, { type: "null" }],
     },
@@ -100,6 +102,39 @@ const editionSchema = {
   additionalProperties: false,
   required: ["name"],
   properties: { name: nonEmptyString, source_url: nonEmptyString },
+};
+
+const sourceEditionSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "provider_id",
+    "source_id",
+    "language",
+    "script",
+    "format",
+    "version",
+    "source_url",
+    "verification_status",
+    "rights_status",
+    "source_references",
+  ],
+  properties: {
+    provider_id: { type: "string", pattern: STABLE_ID },
+    source_id: nonEmptyString,
+    language: nonEmptyString,
+    script: nonEmptyString,
+    format: nonEmptyString,
+    version: nonEmptyString,
+    source_url: nonEmptyString,
+    verification_status: { enum: ["unverified", "verified"] },
+    rights_status: {
+      enum: ["unverified", "conditional", "open", "restricted"],
+    },
+    rights_url: nonEmptyString,
+    usage_note: { type: "string" },
+    source_references: { type: "array", items: sourceReferenceSchema },
+  },
 };
 
 const bibliographyEntrySchema = {
@@ -119,6 +154,7 @@ export const contentRecordSchemas = Object.freeze({
       translators: stringArray,
       source_languages: stringArray,
       edition: editionSchema,
+      source_edition: sourceEditionSchema,
       bibliography: { type: "array", items: bibliographyEntrySchema },
       related_texts: { type: "array", items: uuid, uniqueItems: true },
     },
@@ -299,12 +335,66 @@ export const taxonomySchema = {
   $id: "https://borido.local/schemas/taxonomy.json",
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "canon_id", "name", "sections"],
+  required: [
+    "schema_version",
+    "canon_id",
+    "name",
+    "tradition",
+    "verification_status",
+    "source_references",
+    "sections",
+  ],
   properties: {
     schema_version: { const: CONTENT_SCHEMA_VERSION },
     canon_id: { type: "string", pattern: STABLE_ID },
     name: nonEmptyString,
+    tradition: nonEmptyString,
+    language: nonEmptyString,
+    script: nonEmptyString,
+    verification_status: { enum: ["unverified", "verified"] },
+    source_references: { type: "array", items: sourceReferenceSchema },
     sections: { type: "array", items: taxonomySectionSchema },
+  },
+};
+
+export const sourceRegistrySchema = {
+  $id: "https://borido.local/schemas/source-registry.json",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "providers"],
+  properties: {
+    schema_version: { const: CONTENT_SCHEMA_VERSION },
+    providers: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: [
+          "id",
+          "name",
+          "kind",
+          "official_url",
+          "formats",
+          "verification_status",
+          "rights_status",
+          "source_references",
+        ],
+        properties: {
+          id: { type: "string", pattern: STABLE_ID },
+          name: nonEmptyString,
+          kind: { enum: ["digital-canon", "text-repository"] },
+          official_url: nonEmptyString,
+          formats: stringArray,
+          verification_status: { enum: ["unverified", "verified"] },
+          rights_status: {
+            enum: ["unverified", "conditional", "open", "restricted"],
+          },
+          rights_url: nonEmptyString,
+          usage_note: { type: "string" },
+          source_references: { type: "array", items: sourceReferenceSchema },
+        },
+      },
+    },
   },
 };
 
@@ -360,6 +450,7 @@ export const schemaValidators = Object.freeze({
   site: ajv.compile(siteSettingsSchema),
   media: ajv.compile(mediaAssetsSchema),
   taxonomy: ajv.compile(taxonomySchema),
+  sources: ajv.compile(sourceRegistrySchema),
   urlHistory: ajv.compile(urlHistorySchema),
 });
 

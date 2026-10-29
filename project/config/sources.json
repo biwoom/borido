@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "providers": [
+    {
+      "id": "cbeta",
+      "name": "CBETA 電子佛典集成",
+      "kind": "digital-canon",
+      "official_url": "https://www.cbeta.org/",
+      "formats": ["tei-p5-xml"],
+      "verification_status": "verified",
+      "rights_status": "conditional",
+      "rights_url": "https://www.cbeta.org/copyright.php",
+      "usage_note": "자료와 판본별 이용 조건, CBETA 버전과 출처 표시를 수록 전에 확인한다.",
+      "source_references": [
+        {
+          "title": "CBETA XML P5",
+          "url": "https://github.com/cbeta-org/xml-p5",
+          "locator": "공식 TEI P5 XML 저장소와 저작권 안내 링크",
+          "checked_at": "2026-10-29T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "koreana-db",
+      "name": "고려대장경 지식베이스",
+      "kind": "digital-canon",
+      "official_url": "https://kb.sutra.re.kr/",
+      "formats": ["xml", "image"],
+      "verification_status": "unverified",
+      "rights_status": "unverified",
+      "usage_note": "현행 공식 서비스 주소, 개별 데이터 형식과 재사용 조건을 실제 수록 전에 다시 확인한다.",
+      "source_references": []
+    },
+    {
+      "id": "gretil",
+      "name": "GRETIL",
+      "kind": "text-repository",
+      "official_url": "https://gretil.sub.uni-goettingen.de/",
+      "formats": ["plain-text", "tei-xml"],
+      "verification_status": "verified",
+      "rights_status": "unverified",
+      "usage_note": "자료별 입력자·저본·품질·전사와 이용 조건이 다르므로 개별 텍스트 단위로 확인한다.",
+      "source_references": [
+        {
+          "title": "GRETIL 공식 소개",
+          "url": "https://gretil.sub.uni-goettingen.de/",
+          "locator": "자료 출처·품질·형식 다양성과 TEI 전환 설명",
+          "checked_at": "2026-10-29T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "vri-cst",
+      "name": "Vipassana Research Institute CST",
+      "kind": "digital-canon",
+      "official_url": "https://www.tipitaka.org/",
+      "formats": ["xml", "unicode-text"],
+      "verification_status": "verified",
+      "rights_status": "conditional",
+      "rights_url": "https://www.vridhamma.org/Chattha-Sangayana-Tipitaka-Software",
+      "usage_note": "언어와 표시 문자를 구분하고 사용하는 릴리스·자료군별 배포 조건을 확인한다.",
+      "source_references": [
+        {
+          "title": "VRI Chaṭṭha Saṅgāyana Tipiṭaka Software",
+          "url": "https://www.vridhamma.org/Chattha-Sangayana-Tipitaka-Software",
+          "locator": "Unicode 판본과 다중 문자·자료 범위 설명",
+          "checked_at": "2026-10-29T00:00:00Z"
+        }
+      ]
+    }
+  ]
+}

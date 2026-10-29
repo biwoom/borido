@@ -120,17 +120,18 @@ JSON 예시는 합성 자료의 본문 레코드다. 원본 계층과 유효한 
 
 ### 4.1 경론과 서지
 
-`text`는 `canon` 객체를 가지며 대장경/대표 분류에 연결한다. 문헌 번호·소속은 추측하지 않는다. 작성 중 미검증/누락 정보는 보존할 수 있으나 공개 적합성은 [분류 검증](#taxonomy)을 만족해야 한다.
+`text`는 `canon` 객체로 문헌 체계/대표 분류에, 선택 `source_edition`으로 실제 디지털 판본 제공처에 연결한다. 신수대장경·고려대장경·CST 같은 분류/판본과 CBETA·고려대장경 지식베이스·GRETIL·VRI 같은 디지털 제공처를 같은 ID로 취급하지 않는다. GRETIL처럼 특정 대장경이 아닌 저장소 자료는 `canon_id: null`을 허용한다. 문헌 번호·소속·대응 관계는 추측하지 않는다.
 
 |필드|형식/의미|
 |---|---|
-|`canon.canon_id`|체계 ID. 초기 지원 `taisho`|
+|`canon.canon_id`|문헌 체계 ID 또는 분류 없는 저장소 판본의 `null`|
 |`canon.section_id`|대표 분류 ID. 작성 중 미지정은 `null`, 공개 전 유효 참조 필요|
 |`canon.catalog_number`|확인된 문헌 번호 문자열 또는 `null`|
 |`canon.verification_status`|`unverified` 또는 `verified`|
 |`canon.source_references`|근거 자료 목록(§5)|
 |`authors` / `translators` / `source_languages`|선택 문자열 배열. 표시명/언어 정보|
-|`edition`|선택 객체. `name`과 선택 `source_url`|
+|`source_edition`|선택 디지털 판본. 제공처/원 식별자·언어/문자·형식/버전·URL·검증/이용 상태/근거|
+|`edition`|이전 최소 판본 표시 호환 필드. 새 디지털 판본은 `source_edition` 사용|
 |`bibliography`|선택 배열. 항목은 `citation`과 선택 `url`|
 |`related_texts`|선택 경론 UUID 배열|
 
@@ -155,13 +156,15 @@ JSON 예시는 합성 자료의 본문 레코드다. 원본 계층과 유효한 
 <a id="taxonomy"></a>
 ## 5. 분류·출처 검증
 
-`config/canons/taisho.json`은 `schema_version`, `canon_id`, 표시 `name`, `sections` 배열을 가진다. 분류 항목은 `id`, `canon_id`, `name`, `slug`, `order`, 선택 `description`, `verification_status`, `source_references`를 가진다. 분류 ID는 안정적으로 유지하고 화면 코드에 목록을 하드코딩하지 않는다.
+`config/canons/{canon-id}.json`은 `schema_version`, `canon_id`, 표시 `name`, 전승 `tradition`, 선택 언어/문자, 검증 상태/근거와 `sections` 배열을 가진다. 분류 항목은 `id`, `canon_id`, `name`, `slug`, `order`, 선택 `description`, `verification_status`, `source_references`를 가진다. 분류 ID는 안정적으로 유지하고 화면 코드에 목록을 하드코딩하지 않는다.
+
+`config/sources.json`은 디지털 제공처를 등록한다. 제공처는 안정 ID, 이름, `digital-canon`/`text-repository` 역할, 공식 URL, 형식, 제공처 확인 상태, 자료별 이용 상태/안내와 근거를 가진다. `source_edition`은 이 제공처 ID와 원 식별자, BCP 47 계열 언어 코드와 ISO 15924 계열 문자 코드, 형식/릴리스, 원 URL을 기록한다. 같은 팔리어의 Roman/Myanmar 표기는 언어와 문자를 분리한다. 제공처가 확인되었다고 개별 원문의 이용 가능 상태가 자동 확정되지는 않는다.
 
 출처 항목은 `title`(자료명), 선택 `url`, `locator`(권/쪽/목록 위치), `checked_at`(확인 시각)을 표현한다. 검증된 분류/경론 서지에는 실제 대조 근거를 남긴다. 검증 전 자료는 `unverified`로 표시하고 공식 공개 목록에 자동 포함하지 않는다.
 
-원 목차와 [SAT](https://21dzk.l.u-tokyo.ac.jp/SAT/)·[CBETA](https://cbeta.org/) 자료를 대조하되 각 자료의 분류 관례와 한국어 표시명 차이를 기록한다. 사이트 주소를 아는 것만으로 전체 분류/소속/번호가 검증된 것은 아니다. 사용할 경론 한 편과 필요한 분류부터 확인하고, 실제 본문은 출처/사용 범위가 확인된 격리 자료를 사용한다(R03).
+한역은 원 목차·SAT·CBETA·고려대장경 자료를, 산스크리트는 GRETIL 개별 자료의 입력자/저본/전사 정보를, 팔리는 VRI CST의 문헌 층위·릴리스/문자 정보를 대조한다. 사이트 주소를 아는 것만으로 전체 분류/소속/번호·이용 조건이 검증된 것은 아니다. W09-A의 CBETA T01n0002 사례는 공식 TEI 헤더 메타데이터만 검증하며 원문을 포함하지 않는다. 실제 본문은 자료별 출처와 이용 범위를 확인한 뒤 격리해 사용한다(R03).
 
-초기 공개 탐색은 대표 분류 하나를 사용한다. 추가 대장경·주제 분류/인물 그래프·자동 분류는 초기 범위에 넣지 않는다. 존재하지 않는 비어 있지 않은 분류 참조는 오류다. 미지정/미검증 초안은 공개하지 않으며, 공개 경론이 유효/검증된 대표 분류와 소속 근거를 충족하지 못하면 공개 빌드를 차단한다.
+한 경론 레코드는 하나의 주 문헌 분류와 하나의 디지털 판본 증거를 가진다. 다른 판본·언어의 경론은 별도 안정 ID로 보존하고 `related_texts`로 명시 연결하며 자동 동일시하지 않는다. 추가 주제 분류/인물 그래프·자동 분류는 초기 범위에 넣지 않는다. 존재하지 않는 분류/제공처 참조는 오류다. 공개 경론은 분류가 있는 경우 검증된 체계/대표 분류가 필요하고, 모든 경우 검증된 디지털 판본과 공개 가능한 이용 상태가 필요하다. `unverified`·`restricted`는 공개 blocker다.
 
 <a id="visibility"></a>
 ## 6. 공개 조건의 단일 기준

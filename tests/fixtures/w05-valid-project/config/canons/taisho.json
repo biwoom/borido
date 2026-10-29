@@ -2,6 +2,11 @@
   "schema_version": 1,
   "canon_id": "taisho",
   "name": "합성 검증용 대장경",
+  "tradition": "합성 검증",
+  "language": "zxx",
+  "script": "Zyyy",
+  "verification_status": "unverified",
+  "source_references": [],
   "sections": [
     {
       "id": "synthetic-section",

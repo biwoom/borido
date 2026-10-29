@@ -35,6 +35,7 @@ D01–D22의 추천 방향을 채택한 뒤 D23–D24로 운영 구조를 변경
 |D22|실제 경론/스트레스 사례·환경/규모 명시·첫 측정 후 성능 예산 확정. 측정 없는 성능 통과 금지|[검증 정책](development-plan.md#verification)|W20·W27·W32–W34; R06|
 |D23|`biwoom/borido`의 단일 `main`과 한 체크아웃을 운영 기준으로 사용하고 실제 원본은 예약된 `project/` 아래에 둔다. 프로그램과 원본은 물리 저장소를 공유하되 경로/쓰기 책임은 분리한다. 외부 프로젝트는 명시 경로 선택으로 유지|[실행 구조](technical-spec.md#architecture), [원본 구조](content-spec.md)|W06·W23·W33|
 |D24|`main`에 프로그램과 원본을 저장하고 `dist/`는 추적하지 않는다. 배포 버튼은 변경/공개 범위 확인 후 허용된 `project/` 원본만 커밋·푸시하고 정확한 커밋으로 수동 승인 GitHub Actions Pages workflow를 실행한다. `gh-pages` 브랜치 없이 검증된 artifact만 게시한다|[배포](technical-spec.md#deployment), [배포 UI](ui-spec.md#editor)|W28–W31; R05|
+|D25|신수대장경/고려대장경/CST 같은 문헌 분류와 CBETA/고려대장경 지식베이스/GRETIL/VRI 같은 디지털 제공처·판본을 분리한다. 언어/문자·릴리스·자료별 출처/이용 상태를 기록하고 대응 경론을 자동 동일시하지 않는다|[분류](content-spec.md#taxonomy)|W09-A·W27; R03|
 
 대안과 상세 선택 이유는 아카이브 추천안에 보존했다. 새 결정을 바꾸려면 기존 행을 조용히 수정해 과거 결정을 지우지 않고 변경일·이유·영향받는 명세/작업을 기록한다. 필요 없었던 프레임워크/DB/원격 CMS를 이번 통합에 추가하지 않았다.
 

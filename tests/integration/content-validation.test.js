@@ -95,6 +95,7 @@ describe("W05 project content validation", () => {
       records: 8,
       assets: 1,
       taxonomies: 1,
+      sources: 1,
       url_history_entries: 0,
       errors: 0,
       warnings: 0,

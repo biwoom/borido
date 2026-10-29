@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -46,6 +46,73 @@ describe("W08 top-level content CRUD and references", () => {
     return root;
   }
 
+  async function enableVerifiedPublication(root) {
+    await writeFile(
+      join(root, "config", "canons", "test-canon.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        canon_id: "test-canon",
+        name: "합성 검증 문헌 체계",
+        tradition: "synthetic",
+        language: "zxx",
+        script: "Zyyy",
+        verification_status: "verified",
+        source_references: [],
+        sections: [{
+          id: "test-section",
+          canon_id: "test-canon",
+          name: "합성 검증 분류",
+          slug: "test-section",
+          order: 10,
+          verification_status: "verified",
+          source_references: [],
+        }],
+      }, null, 2)}\n`,
+      "utf8",
+    );
+    await writeFile(
+      join(root, "config", "sources.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        providers: [{
+          id: "test-provider",
+          name: "합성 검증 제공처",
+          kind: "text-repository",
+          official_url: "https://example.invalid/",
+          formats: ["plain-text"],
+          verification_status: "verified",
+          rights_status: "open",
+          source_references: [],
+        }],
+      }, null, 2)}\n`,
+      "utf8",
+    );
+  }
+
+  function verifiedTextFields(sourceId) {
+    return {
+      canon: {
+        canon_id: "test-canon",
+        section_id: "test-section",
+        catalog_number: sourceId,
+        verification_status: "verified",
+        source_references: [],
+      },
+      source_edition: {
+        provider_id: "test-provider",
+        source_id: sourceId,
+        language: "zxx",
+        script: "Zyyy",
+        format: "plain-text",
+        version: "test-1",
+        source_url: `https://example.invalid/${sourceId}`,
+        verification_status: "verified",
+        rights_status: "open",
+        source_references: [],
+      },
+    };
+  }
+
   it("creates all four top-level types as drafts with their required files", async () => {
     const root = await project();
     const text = await createContent({
@@ -88,7 +155,7 @@ describe("W08 top-level content CRUD and references", () => {
       );
     }
     expect(text.record.canon).toMatchObject({
-      canon_id: "taisho",
+      canon_id: null,
       verification_status: "unverified",
     });
     expect(text.body).toBe("# 개요\n");
@@ -279,11 +346,13 @@ describe("W08 top-level content CRUD and references", () => {
 
   it("warns instead of exposing a draft optional target from published content", async () => {
     const root = await project();
+    await enableVerifiedPublication(root);
     const target = await createContent({
       root,
       type: "text",
       title: "비공개 관련 경론",
       slug: "draft-related-text",
+      fields: verifiedTextFields("target"),
       programRoot,
     });
     const source = await createContent({
@@ -291,7 +360,10 @@ describe("W08 top-level content CRUD and references", () => {
       type: "text",
       title: "공개 경론",
       slug: "published-source-text",
-      fields: { related_texts: [target.id] },
+      fields: {
+        ...verifiedTextFields("source"),
+        related_texts: [target.id],
+      },
       programRoot,
     });
     await updateContent({

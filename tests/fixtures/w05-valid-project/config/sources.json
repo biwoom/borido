@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "providers": [
+    {
+      "id": "synthetic-provider",
+      "name": "합성 검증 제공처",
+      "kind": "text-repository",
+      "official_url": "https://example.invalid/",
+      "formats": ["plain-text"],
+      "verification_status": "unverified",
+      "rights_status": "unverified",
+      "usage_note": "실제 자료가 아닌 테스트 전용 제공처",
+      "source_references": []
+    }
+  ]
+}
