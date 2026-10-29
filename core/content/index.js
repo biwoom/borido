@@ -54,3 +54,4 @@ export {
   outputPathFromInternal,
   plainText,
 } from "../site/index.js";
+export { buildProject, snapshotBuildInputs } from "../build/index.js";

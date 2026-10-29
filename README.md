@@ -38,7 +38,14 @@ npm run test:e2e
 npm run validate -- /absolute/user-project
 ```
 
-`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 Playwright Chromium에서 최초 실행·설정 재열기와 세션 경계를 확인한다. `validate`는 W05 읽기 전용 콘텐츠 검사에 연결했으며 `build`는 아직 제공하지 않는다.
+`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 Playwright Chromium에서 최초 실행·설정 재열기와 세션 경계를 확인한다. `validate`는 W05 읽기 전용 콘텐츠 검사, `build`는 W15의 검증된 전체 정적 빌드에 연결한다.
+
+```sh
+npm run build
+npm run build -- /absolute/user-project
+```
+
+빌드는 완전한 임시 결과와 입력/출력 manifest를 확인한 뒤에만 `dist/`를 교체한다. 오류나 빌드 중 원본 변경, 반영 실패가 있으면 이전 정상 `dist/`를 유지하거나 복원한다. 이 명령은 Git 전송이나 Pages 배포를 수행하지 않는다.
 
 W06부터 인자 없는 개발 서버는 검증된 기본 `./project`를 연다. 프로그램 체크아웃 안의 다른 경로는 계속 차단하며 외부 프로젝트는 기존 명시 인자로 열 수 있다.
 

@@ -12,6 +12,7 @@
   "scripts": {
     "check": "node scripts/check-environment.mjs",
     "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
     "project": "node scripts/project.mjs",
     "validate": "node scripts/validate.mjs",
     "test": "vitest run",

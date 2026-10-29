@@ -74,7 +74,7 @@ Node.js 24.x와 npm 11.x를 사용한다. 기준 검증 버전은 `.nvmrc`/`.nod
 |`npm test`|Vitest 단위/통합|W01–W13 전체 검사 사용 가능|
 |`npm run test:e2e`|Playwright 최초 실행·재열기·세션 흐름|W04 사용 가능, Chromium 필요|
 |`npm run validate -- <path>`|고정 프로젝트의 읽기 전용 원본 검증/인덱스|W05 사용 가능|
-|`npm run build`|정적 빌드|W15 전 미구현|
+|`npm run build [-- <path>]`|입력 재검증·실패 복원을 갖춘 전체 정적 빌드|W15 사용 가능, Git/배포 없음|
 
 프로젝트 CLI/Core는 루트 하나만 다룬다. 정확한 체크아웃 `project/`만 내부 기본 루트로 허용하고 다른 내부 경로는 계속 차단하며, 외부 프로젝트는 명시 경로로만 연다. 설정과 일반 파일 쓰기는 읽을 때 받은 SHA-256 리비전이 일치할 때만 허용한다. 여러 파일 작업은 `.borido/recovery` 사본/manifest·직렬화·롤백/명시 복구를 거치며 이 경로와 `dist/`는 Git 대상이 아니다.
 
