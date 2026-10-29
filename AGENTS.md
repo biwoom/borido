@@ -3,7 +3,7 @@
 - 현재 기준: 2026-10-29 통합 개정 1.0. 사용자가 추천안 적용과 역할별 문서 통합을 승인했다.
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido), Git 주소 `https://github.com/biwoom/borido.git`.
 - 2026-10-29 확인한 원격 공개성은 public, 기본 브랜치는 main이다. 실제 사용자 사이트 URL/원본/배포 대상은 별도 설정하며 추측하지 않는다.
-- W01–W04가 완료되어 Node/npm 기반, 사용자 프로젝트/설정, 보호된 루프백 API와 최초 실행·설정 UI가 있다. 콘텐츠 편집·정적 생성과 사이트 배포는 아직 없다.
+- W01–W05가 완료되어 Node/npm 기반, 사용자 프로젝트/설정, 보호된 루프백 API·최초 실행 UI와 읽기 전용 콘텐츠 스키마/검증/인덱스가 있다. 콘텐츠 저장·편집·정적 생성과 사이트 배포는 아직 없다.
 
 ## 기준 문서와 작업 범위
 
@@ -70,9 +70,9 @@ Node.js 24.x와 npm 11.x를 사용한다. 기준 검증 버전은 `.nvmrc`/`.nod
 |`npm run check`|Node/npm 환경 검사|W01 사용 가능|
 |`npm run project -- init/open …`|외부 사용자 프로젝트 생성/열기|W02 사용 가능|
 |`npm run dev -- --project <path>`|고정 프로젝트의 최초 실행·설정 UI와 루프백 API|W04 사용 가능|
-|`npm test`|Vitest 단위/통합|W01–W04 전체 검사 사용 가능|
+|`npm test`|Vitest 단위/통합|W01–W05 전체 검사 사용 가능|
 |`npm run test:e2e`|Playwright 최초 실행·재열기·세션 흐름|W04 사용 가능, Chromium 필요|
-|`npm run validate`|원본 검증|W05 전 미구현|
+|`npm run validate -- <path>`|고정 프로젝트의 읽기 전용 원본 검증/인덱스|W05 사용 가능|
 |`npm run build`|정적 빌드|W15 전 미구현|
 
 프로젝트 CLI/Core는 명시한 루트 하나만 다루며 프로그램 체크아웃 내부를 사용자 프로젝트로 초기화하지 않는다. `config/site.json`의 공개 URL, 원본 저장소와 배포 저장소를 서로 대입하지 않는다. 설정 쓰기는 읽을 때 받은 SHA-256 리비전이 일치할 때만 허용한다. 알 수 없는 필드/버전과 인증 비밀은 조용히 수정하지 않는다.

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "10000000-0000-4000-8000-000000000001",
+  "type": "text",
+  "title": "합성 검증 경론",
+  "slug": "synthetic-text",
+  "status": "draft",
+  "created_at": "2026-10-29T00:00:00Z",
+  "updated_at": "2026-10-29T00:00:00Z",
+  "description": "실제 문헌이 아닌 W05 검증 자료",
+  "canon": {
+    "canon_id": "taisho",
+    "section_id": null,
+    "catalog_number": null,
+    "verification_status": "unverified",
+    "source_references": []
+  },
+  "authors": [],
+  "translators": [],
+  "source_languages": [],
+  "related_texts": []
+}

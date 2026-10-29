@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "site_name": "W05 합성 검증 프로젝트",
+  "description": "실제 문헌이 아닌 코드 계약 검증용 자료",
+  "default_language": "ko",
+  "author_name": "",
+  "license": "",
+  "timezone": "Asia/Seoul",
+  "base_url": null,
+  "base_path": "/",
+  "source_repository": null,
+  "deployment": null
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "10000000-0000-4000-8000-000000000006",
+  "type": "story",
+  "title": "합성 검증 이야기",
+  "slug": "synthetic-story",
+  "status": "draft",
+  "created_at": "2026-10-29T00:00:00Z",
+  "updated_at": "2026-10-29T00:00:00Z",
+  "body_file": "story.md",
+  "sources": [],
+  "adapted": false,
+  "featured_media_id": "10000000-0000-4000-8000-000000000009"
+}

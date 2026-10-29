@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "10000000-0000-4000-8000-000000000009",
+      "file_path": "media/images/synthetic-cover.png",
+      "media_type": "image/png",
+      "status": "private",
+      "alt": "합성 검증용 자리표시자",
+      "caption": "실제 이미지가 아닌 fixture 파일",
+      "imported_at": "2026-10-29T00:00:00Z"
+    }
+  ]
+}

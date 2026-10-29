@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "10000000-0000-4000-8000-000000000007",
+  "type": "blog",
+  "title": "W05 계약 기록",
+  "slug": "w05-contract",
+  "status": "draft",
+  "created_at": "2026-10-29T00:00:00Z",
+  "updated_at": "2026-10-29T00:00:00Z",
+  "body_file": "post.md",
+  "author": "",
+  "tags": ["synthetic"]
+}

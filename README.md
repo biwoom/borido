@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **W01–W04 완료.** Node/npm 기반, 사용자 프로젝트/설정 계약, 보호된 루프백 서버와 최초 실행·설정 화면을 구현했다. 콘텐츠 편집·정적 사이트 생성과 배포는 아직 없다.
+- 현재 상태: **W01–W05 완료.** Node/npm 기반, 사용자 프로젝트/설정, 보호된 루프백 서버·최초 실행 UI와 읽기 전용 콘텐츠 스키마/검증/인덱스를 구현했다. 콘텐츠 저장·편집, 정적 사이트 생성과 배포는 아직 없다.
 
 ## 문서 읽기
 
@@ -35,9 +35,10 @@ npm ci
 npm run check
 npm test
 npm run test:e2e
+npm run validate -- /absolute/user-project
 ```
 
-`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 Playwright Chromium에서 최초 실행·설정 재열기와 세션 경계를 확인한다. `validate`, `build`는 해당 기능이 아직 없어 제공하지 않는다.
+`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 Playwright Chromium에서 최초 실행·설정 재열기와 세션 경계를 확인한다. `validate`는 W05 읽기 전용 콘텐츠 검사에 연결했으며 `build`는 아직 제공하지 않는다.
 
 W02 프로젝트 CLI는 프로그램 체크아웃 밖의 존재하지 않는 경로만 새 프로젝트로 초기화한다. 기존 경로를 덮어쓰지 않으며 GitHub 설정은 생략할 수 있다.
 
@@ -57,4 +58,6 @@ W04 로컬 편집기는 다음처럼 시작한다. 존재하지 않는 경로면
 npm run dev -- --project /absolute/user-project
 ```
 
-화면에서 사이트명·설명·언어·시간대·작성자·라이선스·공개 URL을 확인하고 명시적으로 저장한다. GitHub 연결 없이 오프라인으로 시작할 수 있으며 초기화 후 경론 목록 자리로 이동한다. 경로 선택은 실행 인자로만 고정하고 화면에서 다른 루트로 바꾸지 않는다. 계약은 [W03 서버](docs/technical-spec.md#w03-server-contract)와 [W04 UI](docs/technical-spec.md#w04-admin-contract)를 따른다. 다음 작업은 [W05](docs/development-plan.md#phase1)의 콘텐츠 스키마·검증·인덱스다.
+화면에서 사이트명·설명·언어·시간대·작성자·라이선스·공개 URL을 확인하고 명시적으로 저장한다. GitHub 연결 없이 오프라인으로 시작할 수 있으며 초기화 후 경론 목록 자리로 이동한다. 경로 선택은 실행 인자로만 고정하고 화면에서 다른 루트로 바꾸지 않는다. 계약은 [W03 서버](docs/technical-spec.md#w03-server-contract)와 [W04 UI](docs/technical-spec.md#w04-admin-contract)를 따른다.
+
+W05 `validate`는 콘텐츠·경론 내부 레코드, 미디어, 분류, URL 이력과 사이트 설정을 읽기 전용으로 검사한다. 진단에는 수준·코드·프로젝트 상대 경로·레코드 ID·필드가 포함되며 원본을 자동 수정하지 않는다. 성공은 종료코드 0, 검증 오류는 1, 명령/프로젝트 열기 오류는 2다. 다음 작업은 W06의 안전한 저장·복구 기반이다.

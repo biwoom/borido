@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "canon_id": "taisho",
+  "name": "합성 검증용 대장경",
+  "sections": [
+    {
+      "id": "synthetic-section",
+      "canon_id": "taisho",
+      "name": "합성 검증 분류",
+      "slug": "synthetic-section",
+      "order": 10,
+      "description": "실제 분류가 아닌 테스트 자료",
+      "verification_status": "unverified",
+      "source_references": []
+    }
+  ]
+}

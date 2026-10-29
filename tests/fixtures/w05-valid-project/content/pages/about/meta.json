@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "10000000-0000-4000-8000-000000000008",
+  "type": "page",
+  "title": "합성 프로젝트 소개",
+  "slug": "about",
+  "status": "draft",
+  "created_at": "2026-10-29T00:00:00Z",
+  "updated_at": "2026-10-29T00:00:00Z",
+  "body_file": "page.md",
+  "menu_visible": false
+}
