@@ -37,6 +37,11 @@ export const PROJECT_DIRECTORIES = Object.freeze([
 ]);
 
 const DEFAULT_PROGRAM_ROOT = fileURLToPath(new URL("../../", import.meta.url));
+export const DEFAULT_PROJECT_DIRECTORY = "project";
+
+export function defaultProjectRoot(programRoot = DEFAULT_PROGRAM_ROOT) {
+  return join(resolve(programRoot), DEFAULT_PROJECT_DIRECTORY);
+}
 
 function isMissing(error) {
   return error?.code === "ENOENT";
@@ -84,13 +89,15 @@ async function resolveNewRoot(root) {
   return join(await canonicalExistingPath(parent), basename(absolute));
 }
 
-async function assertOutsideProgramRoot(projectRoot, programRoot) {
+async function assertAllowedProjectRoot(projectRoot, programRoot) {
   const canonicalProgram = await canonicalExistingPath(programRoot);
   const relation = relative(canonicalProgram, projectRoot);
-  if (relation === "" || (!relation.startsWith("..") && !isAbsolute(relation))) {
+  const inside = relation === "" || (!relation.startsWith("..") && !isAbsolute(relation));
+  const defaultRoot = join(canonicalProgram, DEFAULT_PROJECT_DIRECTORY);
+  if (inside && projectRoot !== defaultRoot) {
     throw new ProjectError(
       "PROJECT_INSIDE_PROGRAM_ROOT",
-      "사용자 프로젝트는 프로그램 체크아웃 밖에 두어야 합니다.",
+      "프로그램 체크아웃 안에서는 예약된 project/만 프로젝트로 사용할 수 있습니다.",
     );
   }
 }
@@ -141,7 +148,7 @@ export async function initializeProject({
   programRoot = DEFAULT_PROGRAM_ROOT,
 }) {
   const projectRoot = await resolveNewRoot(root);
-  await assertOutsideProgramRoot(projectRoot, programRoot);
+  await assertAllowedProjectRoot(projectRoot, programRoot);
 
   const existing = await exists(projectRoot);
   if (existing) {
@@ -239,7 +246,7 @@ export async function openProject({ root, programRoot = DEFAULT_PROGRAM_ROOT }) 
     }
     throw asProjectError(error);
   }
-  await assertOutsideProgramRoot(projectRoot, programRoot);
+  await assertAllowedProjectRoot(projectRoot, programRoot);
   const info = await exists(projectRoot);
   if (!info?.isDirectory()) {
     throw new ProjectError(

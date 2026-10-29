@@ -1,6 +1,8 @@
 .DS_Store
 node_modules/
 dist/
+project/dist/
+project/.borido/
 coverage/
 playwright-report/
 test-results/

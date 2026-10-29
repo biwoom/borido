@@ -315,4 +315,24 @@ describe("W03 local server boundary", () => {
       }
     }
   });
+
+  it("uses the reserved integrated project when dev has no project argument", async () => {
+    const child = spawn(process.execPath, ["scripts/dev.mjs"], {
+      cwd: programRoot,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    try {
+      const startup = await readStartupJson(child);
+      expect(startup).toMatchObject({
+        ok: true,
+        project_root: join(programRoot, "project"),
+        mode: "existing",
+      });
+    } finally {
+      if (child.exitCode === null) {
+        child.kill("SIGTERM");
+        await once(child, "exit");
+      }
+    }
+  });
 });

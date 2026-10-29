@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "site_name": "보리도",
+  "description": "불교 경론과 이야기를 읽고 기록하는 공간",
+  "default_language": "ko",
+  "author_name": "",
+  "license": "",
+  "timezone": "Asia/Seoul",
+  "base_url": "https://biwoom.github.io",
+  "base_path": "/borido/",
+  "source_repository": {
+    "repository_url": "https://github.com/biwoom/borido.git",
+    "branch": "main",
+    "public_links": false
+  },
+  "deployment": {
+    "repository_url": "https://github.com/biwoom/borido.git",
+    "branch": "main"
+  }
+}

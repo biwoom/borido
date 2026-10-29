@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **W01–W05 완료.** Node/npm 기반, 사용자 프로젝트/설정, 보호된 루프백 서버·최초 실행 UI와 읽기 전용 콘텐츠 스키마/검증/인덱스를 구현했다. 콘텐츠 저장·편집, 정적 사이트 생성과 배포는 아직 없다.
+- 현재 상태: **W01–W06 완료.** 통합 `project/`, 보호된 루프백 UI, 콘텐츠 스키마/인덱스와 해시 리비전·원자적 다중 파일 저장/복구 기반을 구현했다. 콘텐츠 CRUD·정적 사이트 생성과 배포는 아직 없다.
 
 ## 문서 읽기
 
@@ -40,7 +40,7 @@ npm run validate -- /absolute/user-project
 
 `check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 Playwright Chromium에서 최초 실행·설정 재열기와 세션 경계를 확인한다. `validate`는 W05 읽기 전용 콘텐츠 검사에 연결했으며 `build`는 아직 제공하지 않는다.
 
-현재 W02 프로젝트 CLI는 아직 프로그램 체크아웃 밖의 존재하지 않는 경로만 초기화한다. D23–D24 목표 구조의 기본 `./project` 실행과 Actions 배포는 W06·W28–W31에서 구현하며, 그 전까지 기존 경로를 임의 이동하지 않는다.
+W06부터 인자 없는 개발 서버는 검증된 기본 `./project`를 연다. 프로그램 체크아웃 안의 다른 경로는 계속 차단하며 외부 프로젝트는 기존 명시 인자로 열 수 있다.
 
 ```sh
 npm run project -- init /absolute/user-project \
@@ -52,7 +52,13 @@ npm run project -- open /absolute/user-project
 
 공개 URL을 생략하면 오프라인 프로젝트로 시작한다. 전체 필드와 오류 계약은 [기술 명세의 W02 계약](docs/technical-spec.md#w02-project-contract)을 따른다.
 
-W04 로컬 편집기는 다음처럼 시작한다. 존재하지 않는 경로면 최초 실행 화면에서 프로젝트를 만들고, 기존 보리도 프로젝트면 설정 화면을 연다. 포트를 생략하면 사용 가능한 루프백 포트를 선택하며 터미널에 출력된 `url`을 브라우저에서 연다.
+통합 로컬 편집기는 다음처럼 시작한다. 포트를 생략하면 사용 가능한 루프백 포트를 선택하며 터미널에 출력된 `url`을 브라우저에서 연다.
+
+```sh
+npm run dev
+```
+
+외부 프로젝트를 명시적으로 열 때만 경로 옵션을 사용한다.
 
 ```sh
 npm run dev -- --project /absolute/user-project
@@ -60,4 +66,4 @@ npm run dev -- --project /absolute/user-project
 
 화면에서 사이트명·설명·언어·시간대·작성자·라이선스·공개 URL을 확인하고 명시적으로 저장한다. GitHub 연결 없이 오프라인으로 시작할 수 있으며 초기화 후 경론 목록 자리로 이동한다. 경로 선택은 실행 인자로만 고정하고 화면에서 다른 루트로 바꾸지 않는다. 계약은 [W03 서버](docs/technical-spec.md#w03-server-contract)와 [W04 UI](docs/technical-spec.md#w04-admin-contract)를 따른다.
 
-W05 `validate`는 콘텐츠·경론 내부 레코드, 미디어, 분류, URL 이력과 사이트 설정을 읽기 전용으로 검사한다. 진단에는 수준·코드·프로젝트 상대 경로·레코드 ID·필드가 포함되며 원본을 자동 수정하지 않는다. 성공은 종료코드 0, 검증 오류는 1, 명령/프로젝트 열기 오류는 2다. 다음 작업은 W06의 안전한 저장·복구 기반이다.
+W05 `validate`는 콘텐츠·경론 내부 레코드, 미디어, 분류, URL 이력과 사이트 설정을 읽기 전용으로 검사한다. W06 저장 Core는 SHA-256 리비전이 일치할 때만 원본을 같은 폴더의 임시 파일로 교체하고, 여러 파일 작업의 사본/manifest·직렬화·롤백·명시 복구를 제공한다. 복구/로컬 결과는 Git에서 제외한다. 다음 작업은 W07 실효 공개 판정이다.

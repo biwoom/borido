@@ -17,6 +17,7 @@ import { promisify } from "node:util";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  defaultProjectRoot,
   errorResponse,
   initializeProject,
   newProjectSettings,
@@ -122,6 +123,26 @@ describe("W02 project lifecycle", () => {
         root: insideProgram,
         settings: settings(),
         programRoot,
+      }),
+    ).rejects.toMatchObject({ code: "PROJECT_INSIDE_PROGRAM_ROOT" });
+  });
+
+  it("allows only the reserved project directory inside a program checkout", async () => {
+    const fakeProgramRoot = join(await sandbox(), "program");
+    await mkdir(fakeProgramRoot);
+    const integratedRoot = defaultProjectRoot(fakeProgramRoot);
+    const initialized = await initializeProject({
+      root: integratedRoot,
+      settings: settings("통합 프로젝트"),
+      programRoot: fakeProgramRoot,
+    });
+    expect(initialized.project.root).toBe(await realpath(integratedRoot));
+
+    await expect(
+      initializeProject({
+        root: join(fakeProgramRoot, "other"),
+        settings: settings(),
+        programRoot: fakeProgramRoot,
       }),
     ).rejects.toMatchObject({ code: "PROJECT_INSIDE_PROGRAM_ROOT" });
   });

@@ -2,7 +2,7 @@
 import process from "node:process";
 
 import { startLocalServer } from "../app/server/index.js";
-import { errorResponse } from "../core/project/index.js";
+import { defaultProjectRoot, errorResponse } from "../core/project/index.js";
 
 function parseOptions(args) {
   const options = {};
@@ -24,9 +24,8 @@ function parseOptions(args) {
 
 try {
   const options = parseOptions(process.argv.slice(2));
-  const projectRoot = options.project;
+  const projectRoot = options.project ?? defaultProjectRoot();
   const portValue = options.port ?? null;
-  if (!projectRoot) throw new Error("--project <path>가 필요합니다.");
   const port = portValue === null ? 0 : Number(portValue);
   const local = await startLocalServer({ projectRoot, port });
   console.log(
