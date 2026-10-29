@@ -274,6 +274,23 @@ HTML·외부 URL 허용/정화는 [변환 보안](technical-spec.md#rendering)�
 
 `config/site.json`은 스키마 버전, 사이트명/설명·기본 언어·작성자 표시명·라이선스·시간대·공개 URL 구성·선택 공통 자산·배포 설정을 관리한다. UI에서 전체 공개 URL을 입력받되 저장/생성은 origin과 접두사를 구분한다.
 
+W02의 최초 코드 계약은 다음 필드를 사용한다. 모두 필수이며 아직 연결하지 않은 저장소/공개 URL은 `null`로 명시한다. UI 입력 이름 `public_url`은 저장 필드가 아니며 `base_url`과 `base_path`로 나눈다.
+
+|필드|형식|
+|---|---|
+|`schema_version`|정수 `1`|
+|`site_name`|비어 있지 않은 문자열|
+|`description`|문자열|
+|`default_language`|유효한 BCP 47 언어 태그|
+|`author_name` / `license`|문자열, 값이 없으면 빈 문자열|
+|`timezone`|유효한 IANA 시간대|
+|`base_url`|HTTP(S) origin 또는 `null`|
+|`base_path`|정규화한 `/` 시작/끝 접두사|
+|`source_repository`|원본 저장소 객체 또는 `null`|
+|`deployment`|배포 저장소 객체 또는 `null`|
+
+`source_repository`는 `repository_url`, `branch`, `public_links` boolean을 가진다. `deployment`는 별개의 `repository_url`, `branch`를 가진다. W02는 이 값을 저장/구분할 뿐 원격 접근·브랜치/Pages 유효성을 보장하지 않으며 프로그램 저장소에서 기본값을 채우지 않는다. 그 검증은 W28–W31/R05에 속한다.
+
 |항목|계약|
 |---|---|
 |`base_url`|공개 origin. 예: `https://example.github.io`. 저장소 주소나 접두사를 섞지 않음|
@@ -283,6 +300,8 @@ HTML·외부 URL 허용/정화는 [변환 보안](technical-spec.md#rendering)�
 |원본 연결 설정|원본 저장소/브랜치와 원본 링크 공개 허용을 별도 확인. 프로그램 저장소에서 추측 금지|
 
 GitHub 비밀번호/PAT/세션 토큰을 일반 설정에 넣지 않는다. 사용자 지정 도메인 설정·실제 Pages URL·원격 브랜치는 별도 확인 대상이다(R05).
+
+지원하지 않는 최상위 필드는 읽을 때 보존하고 진단하되 편집 저장을 막는다. 지원하지 않는 스키마 버전과 비밀로 보이는 필드는 오류다. 설정 저장은 읽은 원문의 SHA-256 리비전이 현재 파일과 일치할 때만 같은 폴더의 임시 파일을 거쳐 교체한다. 이 W02 단일 설정 보호는 W06의 전체 저장/복구 계약으로 확장한다.
 
 JSON Schema의 기준은 앱 코드 한 곳이다. `content-types.json`은 지원된 필드의 표시·허용된 기본값 등 편집 정책만 다룬다. 필수 필드·공개 검증·유형 코드를 일반 설정으로 약화/확장하지 못한다. 미지원 필드/버전은 원본을 그대로 보존하고 편집 저장·공개 빌드를 차단해 지원 정보를 안내한다. 자동 필드 삭제·형식 추측·무제한 사용자 필드 편집기를 만들지 않는다.
 

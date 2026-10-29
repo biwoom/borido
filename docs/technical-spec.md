@@ -2,7 +2,7 @@
 
 - 통합 개정 1.0 · 2026-10-29 · 현재 개발 기준
 - 담당: 프로그램 구조·실행·API 경계·파일 변경/복구·변환·검증·빌드·인증/배포.
-- 데이터 규칙은 [콘텐츠 명세](content-spec.md), 상호작용은 [화면 명세](ui-spec.md)가 기준이다. 실제 코드/패키지/서버는 아직 없다.
+- 데이터 규칙은 [콘텐츠 명세](content-spec.md), 상호작용은 [화면 명세](ui-spec.md)가 기준이다. W01–W02 코드/패키지는 있으며 로컬 서버·UI·콘텐츠 기능은 아직 없다.
 
 <a id="architecture"></a>
 ## 1. 실행 영역과 디렉터리
@@ -105,6 +105,20 @@ Basecoat의 소스 CSS/Tailwind 빌드와 이미 컴파일된 배포 파일을 �
 |Git/gh/배포|설치/인증/원격/권한 상태, 변경 목록, 검증 결과/대상 확인·명시 실행|
 
 실제 함수/엔드포인트·HTTP 메서드·요청/응답·오류 코드·리비전/확인 토큰 형식은 구현 전에 R02 계약으로 작성한다. 기존 함수 이름 예시를 이미 존재하는 API로 취급하지 않는다. 저장 충돌과 원격 오류를 정상 성공 응답으로 감추지 않는다. UI는 같은 스키마를 재구현하는 대신 서버 진단과 Core 계약을 사용한다.
+
+<a id="w02-project-contract"></a>
+### 3.3 W02 프로젝트/설정 계약
+
+`core/project`는 `initializeProject`, `openProject`, `writeProjectSettings`와 설정 생성/검증 함수를 제공한다. `npm run project -- init|open`은 같은 Core를 사용하는 임시 CLI다. W03 서버도 이 계약을 호출하며 별도 설정 규칙을 만들지 않는다.
+
+- 신규 초기화는 명시한 절대/상대 경로를 실제 경로로 정규화하고 프로그램 체크아웃 밖인지 확인한다. 상위 폴더가 존재하고 읽기/쓰기가 가능해야 하며 대상은 존재하지 않아야 한다.
+- 준비 자료는 같은 상위 폴더의 무작위 임시 경로에 만들고 대상 폴더를 배타적으로 예약한 뒤 `content`, `media`, `config`, `dist`를 옮긴다. 기존 파일/폴더는 덮어쓰지 않는다. 중간 반영 실패는 `.borido-initializing` 표식과 `PROJECT_INITIALIZATION_INCOMPLETE`로 열기/재초기화를 막는다.
+- 기존 열기는 필수 원본 폴더와 `config/site.json`을 확인한다. 생성물 `dist`는 없어도 열 수 있다. 한 호출 결과는 한 실제 루트만 가진다.
+- 성공은 `{ ok: true, project: { root, settings, settings_revision, editable, diagnostics } }`, 실패는 `{ ok: false, error: { code, message, details } }` 형태다. CLI도 같은 오류 객체를 JSON으로 출력한다.
+- 설정 리비전은 읽은 `site.json` 바이트의 SHA-256이다. 저장에는 `expectedRevision`이 필요하며 불일치하면 `PROJECT_REVISION_CONFLICT`로 원본을 바꾸지 않는다.
+- 공개 URL을 생략한 초기화는 `base_url: null`, `base_path: "/"`, 원본/배포 저장소 `null`로 시작한다. 네트워크·Git/gh·원격 저장소 생성/확인은 실행하지 않는다.
+
+W02는 단일 설정 파일의 안전한 교체까지만 담당한다. 일반 원본의 다중 파일 작업 기록·백업·복구는 W06, HTTP 요청/허용 루트 고정과 오류 정제는 W03에서 확장한다.
 
 <a id="storage"></a>
 ## 4. 저장·다중 파일 변경·복구·이행

@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **W01 프로젝트 기반 완료, 제품 기능 구현 전이다.** Node/npm·ESM·패키지 잠금·테스트 러너 기반을 마련했다. 사이트 배포는 수행하지 않았다.
+- 현재 상태: **W01–W02 완료.** Node/npm 기반과 사용자 프로젝트 생성·열기·설정 계약을 구현했다. 서버·편집 화면·콘텐츠 기능과 사이트 배포는 아직 없다.
 
 ## 문서 읽기
 
@@ -37,4 +37,16 @@ npm test
 npm run test:e2e
 ```
 
-`check`는 지원 Node/npm 환경을 검사한다. `test`와 `test:e2e`는 현재 W01 기반과 패키지 조합만 검증하며 제품 브라우저 기능 검증은 아니다. `dev`, `validate`, `build`는 해당 기능이 아직 없어 제공하지 않는다. 다음 개발 작업은 [W02](docs/development-plan.md#phase1)의 사용자 프로젝트/설정 계약이다.
+`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 현재 W01 러너만 확인하며 제품 브라우저 기능 검증은 아니다. `dev`, `validate`, `build`는 해당 기능이 아직 없어 제공하지 않는다.
+
+W02 프로젝트 CLI는 프로그램 체크아웃 밖의 존재하지 않는 경로만 새 프로젝트로 초기화한다. 기존 경로를 덮어쓰지 않으며 GitHub 설정은 생략할 수 있다.
+
+```sh
+npm run project -- init /absolute/user-project \
+  --name "내 자료실" --language ko --timezone Asia/Seoul \
+  --public-url https://example.github.io/library/
+
+npm run project -- open /absolute/user-project
+```
+
+공개 URL을 생략하면 오프라인 프로젝트로 시작한다. 전체 필드와 오류 계약은 [기술 명세의 W02 계약](docs/technical-spec.md#w02-project-contract)을 따른다. 다음 작업은 [W03](docs/development-plan.md#phase1)의 로컬 서버·요청·경로 경계다.
