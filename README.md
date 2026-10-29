@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **W01–W03 완료.** Node/npm 기반, 사용자 프로젝트/설정 계약과 보호된 루프백 API 서버를 구현했다. 편집 화면·콘텐츠 기능과 사이트 배포는 아직 없다.
+- 현재 상태: **W01–W04 완료.** Node/npm 기반, 사용자 프로젝트/설정 계약, 보호된 루프백 서버와 최초 실행·설정 화면을 구현했다. 콘텐츠 편집·정적 사이트 생성과 배포는 아직 없다.
 
 ## 문서 읽기
 
@@ -37,7 +37,7 @@ npm test
 npm run test:e2e
 ```
 
-`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 현재 W01 러너만 확인하며 제품 브라우저 기능 검증은 아니다. `dev`, `validate`, `build`는 해당 기능이 아직 없어 제공하지 않는다.
+`check`는 지원 Node/npm 환경을 검사한다. `test:e2e`는 Playwright Chromium에서 최초 실행·설정 재열기와 세션 경계를 확인한다. `validate`, `build`는 해당 기능이 아직 없어 제공하지 않는다.
 
 W02 프로젝트 CLI는 프로그램 체크아웃 밖의 존재하지 않는 경로만 새 프로젝트로 초기화한다. 기존 경로를 덮어쓰지 않으며 GitHub 설정은 생략할 수 있다.
 
@@ -51,10 +51,10 @@ npm run project -- open /absolute/user-project
 
 공개 URL을 생략하면 오프라인 프로젝트로 시작한다. 전체 필드와 오류 계약은 [기술 명세의 W02 계약](docs/technical-spec.md#w02-project-contract)을 따른다.
 
-기존 프로젝트의 W03 API 서버는 다음처럼 시작한다. 포트를 생략하면 사용 가능한 루프백 포트를 선택하고 Origin·프로젝트 루트·이번 프로세스의 세션 토큰을 JSON으로 한 번 출력한다.
+W04 로컬 편집기는 다음처럼 시작한다. 존재하지 않는 경로면 최초 실행 화면에서 프로젝트를 만들고, 기존 보리도 프로젝트면 설정 화면을 연다. 포트를 생략하면 사용 가능한 루프백 포트를 선택하며 터미널에 출력된 `url`을 브라우저에서 연다.
 
 ```sh
 npm run dev -- --project /absolute/user-project
 ```
 
-현재 서버는 프로젝트/설정 JSON API만 제공하며 편집 화면은 없다. API 계약은 [기술 명세의 W03 계약](docs/technical-spec.md#w03-server-contract)을 따른다. 다음 작업은 [W04](docs/development-plan.md#phase1)의 최초 실행·설정 UI다.
+화면에서 사이트명·설명·언어·시간대·작성자·라이선스·공개 URL을 확인하고 명시적으로 저장한다. GitHub 연결 없이 오프라인으로 시작할 수 있으며 초기화 후 경론 목록 자리로 이동한다. 경로 선택은 실행 인자로만 고정하고 화면에서 다른 루트로 바꾸지 않는다. 계약은 [W03 서버](docs/technical-spec.md#w03-server-contract)와 [W04 UI](docs/technical-spec.md#w04-admin-contract)를 따른다. 다음 작업은 [W05](docs/development-plan.md#phase1)의 콘텐츠 스키마·검증·인덱스다.

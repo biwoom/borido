@@ -3,7 +3,7 @@
 - 현재 기준: 2026-10-29 통합 개정 1.0. 사용자가 추천안 적용과 역할별 문서 통합을 승인했다.
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido), Git 주소 `https://github.com/biwoom/borido.git`.
 - 2026-10-29 확인한 원격 공개성은 public, 기본 브랜치는 main이다. 실제 사용자 사이트 URL/원본/배포 대상은 별도 설정하며 추측하지 않는다.
-- W01–W03이 완료되어 Node/npm 기반, 사용자 프로젝트/설정과 보호된 루프백 JSON API가 있다. 편집 UI·콘텐츠 기능은 아직 없으며 사이트 배포도 수행하지 않았다.
+- W01–W04가 완료되어 Node/npm 기반, 사용자 프로젝트/설정, 보호된 루프백 API와 최초 실행·설정 UI가 있다. 콘텐츠 편집·정적 생성과 사이트 배포는 아직 없다.
 
 ## 기준 문서와 작업 범위
 
@@ -69,9 +69,9 @@ Node.js 24.x와 npm 11.x를 사용한다. 기준 검증 버전은 `.nvmrc`/`.nod
 |`npm ci`|잠금 설치|W01 사용 가능|
 |`npm run check`|Node/npm 환경 검사|W01 사용 가능|
 |`npm run project -- init/open …`|외부 사용자 프로젝트 생성/열기|W02 사용 가능|
-|`npm run dev -- --project <path>`|고정 프로젝트의 루프백 API 서버|W03 API만 사용 가능, UI 미구현|
-|`npm test`|Vitest 단위/통합|W01–W03 전체 검사 사용 가능|
-|`npm run test:e2e`|Playwright 흐름|W01 러너 검사만 사용 가능|
+|`npm run dev -- --project <path>`|고정 프로젝트의 최초 실행·설정 UI와 루프백 API|W04 사용 가능|
+|`npm test`|Vitest 단위/통합|W01–W04 전체 검사 사용 가능|
+|`npm run test:e2e`|Playwright 최초 실행·재열기·세션 흐름|W04 사용 가능, Chromium 필요|
 |`npm run validate`|원본 검증|W05 전 미구현|
 |`npm run build`|정적 빌드|W15 전 미구현|
 

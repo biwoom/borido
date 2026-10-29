@@ -2,7 +2,7 @@
 
 - 통합 개정 1.0 · 2026-10-29 · 현재 개발 기준
 - 담당: 프로그램 구조·실행·API 경계·파일 변경/복구·변환·검증·빌드·인증/배포.
-- 데이터 규칙은 [콘텐츠 명세](content-spec.md), 상호작용은 [화면 명세](ui-spec.md)가 기준이다. W01–W03 기반/프로젝트/로컬 API는 있으며 UI·콘텐츠 기능은 아직 없다.
+- 데이터 규칙은 [콘텐츠 명세](content-spec.md), 상호작용은 [화면 명세](ui-spec.md)가 기준이다. W01–W04 기반/프로젝트/로컬 API/최초 실행 UI는 있으며 콘텐츠 기능은 아직 없다.
 
 <a id="architecture"></a>
 ## 1. 실행 영역과 디렉터리
@@ -128,8 +128,10 @@ W02는 단일 설정 파일의 안전한 교체까지만 담당한다. 일반 �
 |메서드/경로|보호|결과|
 |---|---|---|
 |`GET /health`|정확한 Host|민감 정보 없는 `{ "ok": true }`|
+|`GET /api/v1/bootstrap`|정확한 Host·세션|고정 루트의 `new`/`existing`/`blocked` 상태와 프로젝트 또는 정제 오류|
+|`POST /api/v1/project`|정확한 Host·세션·Origin, `application/json`|`new` 상태의 고정 경로만 W02로 초기화|
 |`GET /api/v1/project`|정확한 Host·`X-Borido-Session`; Origin이 있으면 정확히 일치|W02 프로젝트/설정·리비전·진단|
-|`PUT /api/v1/project/settings`|정확한 Host·세션·Origin, `application/json`|`settings`, `expected_revision`으로 W02 설정 저장|
+|`PUT /api/v1/project/settings`|정확한 Host·세션·Origin, `application/json`|`settings` 또는 단순 UI `input`, `expected_revision`으로 W02 설정 저장|
 
 - 성공은 W02와 같은 `{ ok: true, project }`, 실패는 `{ ok: false, error: { code, message, details } }` JSON이다. 리비전 충돌은 409, 세션 실패 401, Host/Origin/권한 실패 403, 크기 초과 413, 미디어 타입 오류 415로 구분한다.
 - JSON 본문은 UTF-8 `application/json`만 받고 최대 65,536바이트다. 요청 대상은 최대 4,096바이트이며 쿼리, 잘못된 percent 인코딩, 인코딩 구분자/NUL, `.`/`..`, 역슬래시와 authority 형태를 거절한다.
@@ -138,7 +140,19 @@ W02는 단일 설정 파일의 안전한 교체까지만 담당한다. 일반 �
 - `resolveProjectPath`는 후속 내부 서비스가 사용할 공통 경계다. 프로젝트 상대 경로만 받고 실제 루트 포함 여부를 비교하며 존재하는 대상/새 대상 부모의 심볼릭 링크 이탈을 차단한다. 현재 API는 원본 파일을 직접 제공하지 않는다.
 - 헤더/요청 제한과 15초 요청·5초 헤더 제한을 적용한다. 임의 셸·프로그램 실행, 정적 프로젝트 루트 노출, 런타임 루트 교체, 자동 Git/GitHub 작업은 제공하지 않는다.
 
-W04는 이 API에 로컬 편집 화면을 연결한다. W05 이후 ID 중심 콘텐츠 엔드포인트도 같은 Host/Origin/세션/본문/경로 경계를 사용하며 파일 경로를 외부 CRUD 식별자로 받지 않는다.
+고정 관리자 자산 `/`, `/assets/basecoat.css`, `/assets/admin.css`, `/assets/admin.js`만 세션 없이 제공한다. 프로젝트 폴더는 정적 루트가 아니다. 관리자 자산은 no-store, CSP, `nosniff`, `frame-ancestors 'none'`을 적용한다. 시작 URL은 세션을 fragment로 전달하며 화면이 `sessionStorage`로 옮기고 주소에서 제거한다.
+
+<a id="w04-admin-contract"></a>
+### 3.5 W04 최초 실행·설정 UI 계약
+
+- 실행 인자의 고정 경로가 없으면 `new`, 유효한 보리도 프로젝트면 `existing`, 존재하지만 열 수 없으면 `blocked`다. UI 요청으로 루트를 선택하거나 변경하지 않는다.
+- `new`는 사이트명·설명·기본 언어·시간대·작성자·라이선스·전체 공개 URL을 서버 입력으로 보내며 서버가 W02 설정을 생성한다. 브라우저 언어/시간대는 확인 가능한 기본값일 뿐 자동 확정값이 아니다.
+- `existing`은 같은 필드를 명시 저장하고 읽을 때 받은 설정 리비전을 요구한다. 원본/배포 저장소 필드는 이 단순 화면이 보존하며 자동 연결·Git/GitHub 작업을 하지 않는다.
+- 저장 버튼과 Cmd/Ctrl+S를 제공하고 자동 저장하지 않는다. 미저장 이동/새로고침은 경고하며 실패·충돌 상태를 화면에 남긴다.
+- 생성 성공 후 경론 목록의 빈 상태로 이동한다. 경론 CRUD는 W05 이후이며 미리보기·빌드·배포 버튼은 해당 작업 전까지 비활성이다.
+- Basecoat Vega 배포 CSS와 보리도 CSS/바닐라 JS는 모두 로컬에서 제공한다. Chromium 자동 흐름과 1440px/390px 가로 오버플로·콘솔 오류를 확인했으며 Firefox/WebKit·실제 모바일 기기 통과로 확대 해석하지 않는다.
+
+W05 이후 ID 중심 콘텐츠 엔드포인트도 같은 Host/Origin/세션/본문/경로 경계를 사용하며 파일 경로를 외부 CRUD 식별자로 받지 않는다.
 
 <a id="storage"></a>
 ## 4. 저장·다중 파일 변경·복구·이행

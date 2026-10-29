@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>보리도 로컬 편집기</title>
+    <link rel="stylesheet" href="/assets/basecoat.css" />
+    <link rel="stylesheet" href="/assets/admin.css" />
+    <script type="module" src="/assets/admin.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+
+    <section id="loading-view" class="centered-state" aria-live="polite">
+      <div class="brand-seal" aria-hidden="true">보</div>
+      <p class="eyebrow">BORIDO LOCAL</p>
+      <h1>프로젝트를 확인하고 있습니다</h1>
+      <p class="muted">로컬 파일과 서버 연결 상태를 읽는 중입니다.</p>
+    </section>
+
+    <section id="session-view" class="centered-state" hidden>
+      <div class="brand-seal" aria-hidden="true">보</div>
+      <p class="eyebrow">LOCAL SESSION REQUIRED</p>
+      <h1>로컬 세션 주소로 다시 열어주세요</h1>
+      <p class="state-copy">
+        서버 시작 터미널에 출력된 <strong>url</strong> 값을 브라우저에 붙여 넣으면
+        이번 실행의 세션을 안전하게 연결합니다.
+      </p>
+      <code>npm run dev -- --project /absolute/user-project</code>
+    </section>
+
+    <section id="blocked-view" class="centered-state" hidden>
+      <div class="brand-seal is-warning" aria-hidden="true">!</div>
+      <p class="eyebrow">PROJECT NEEDS ATTENTION</p>
+      <h1>이 경로를 프로젝트로 열 수 없습니다</h1>
+      <p id="blocked-message" class="state-copy"></p>
+      <p class="muted">
+        서버를 종료한 뒤 비어 있는 새 경로나 기존 보리도 프로젝트 경로로 다시 실행하세요.
+      </p>
+    </section>
+
+    <div id="app-shell" class="app-shell" hidden>
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-seal small" aria-hidden="true">보</span>
+          <span>
+            <strong>보리도</strong>
+            <small>로컬 콘텐츠 편집기</small>
+          </span>
+        </div>
+        <div class="topbar-context">
+          <span id="header-site-name">새 프로젝트</span>
+          <span id="save-status" class="status-pill" data-state="idle">준비</span>
+        </div>
+        <div class="topbar-actions" aria-label="사이트 작업">
+          <button class="btn" data-variant="outline" data-size="sm" disabled title="W24에서 제공">
+            미리보기
+          </button>
+          <button class="btn" data-variant="outline" data-size="sm" disabled title="W15에서 제공">
+            빌드
+          </button>
+          <button class="btn" data-size="sm" disabled title="W28 이후 제공">배포</button>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar" aria-label="편집기 메뉴">
+          <nav id="primary-nav">
+            <p class="nav-label">프로젝트</p>
+            <button type="button" class="nav-item is-active" data-view="settings" aria-current="page">
+              <span aria-hidden="true">01</span> 설정
+            </button>
+            <p class="nav-label">콘텐츠</p>
+            <button type="button" class="nav-item" data-view="texts">
+              <span aria-hidden="true">02</span> 경론
+            </button>
+            <button type="button" class="nav-item" data-view="stories">
+              <span aria-hidden="true">03</span> 이야기
+            </button>
+            <button type="button" class="nav-item" data-view="blog">
+              <span aria-hidden="true">04</span> 블로그
+            </button>
+            <button type="button" class="nav-item" data-view="pages">
+              <span aria-hidden="true">05</span> 일반 페이지
+            </button>
+            <button type="button" class="nav-item" data-view="media">
+              <span aria-hidden="true">06</span> 미디어
+            </button>
+          </nav>
+          <div class="sidebar-foot">
+            <span>현재 프로젝트</span>
+            <strong id="project-path">경로 확인 중</strong>
+            <small>다른 경로는 서버를 다시 시작해 엽니다.</small>
+          </div>
+        </aside>
+
+        <main id="main-content" class="main-content" tabindex="-1">
+          <div id="notice" class="notice" role="alert" hidden></div>
+
+          <section id="settings-view" class="content-view">
+            <div class="page-heading">
+              <div>
+                <p id="settings-eyebrow" class="eyebrow">SITE SETTINGS</p>
+                <h1 id="settings-title">사이트 설정</h1>
+                <p id="settings-intro" class="page-intro">
+                  사이트의 기본 정보와 공개 주소를 관리합니다.
+                </p>
+              </div>
+              <div class="heading-meta">
+                <span class="meta-label">저장 방식</span>
+                <strong>명시 저장</strong>
+              </div>
+            </div>
+
+            <div id="new-project-note" class="project-note" hidden>
+              <div>
+                <p class="eyebrow">NEW PROJECT</p>
+                <h2>새 사용자 프로젝트를 준비합니다</h2>
+                <p>아래 경로는 서버 시작 시 고정되었습니다. 기존 파일은 덮어쓰지 않습니다.</p>
+              </div>
+              <code id="new-project-path"></code>
+            </div>
+
+            <form id="site-form" novalidate>
+              <section class="form-section" aria-labelledby="identity-heading">
+                <div class="section-heading">
+                  <span>01</span>
+                  <div>
+                    <h2 id="identity-heading">사이트 정체성</h2>
+                    <p>독자가 보게 될 이름과 기본 표시 정보를 입력합니다.</p>
+                  </div>
+                </div>
+                <div class="field-grid">
+                  <label class="field span-2">
+                    <span>사이트명 <b aria-hidden="true">필수</b></span>
+                    <input name="site_name" required autocomplete="organization" />
+                  </label>
+                  <label class="field span-2">
+                    <span>사이트 설명</span>
+                    <textarea name="description" rows="3"></textarea>
+                  </label>
+                  <label class="field">
+                    <span>기본 언어 <b aria-hidden="true">필수</b></span>
+                    <input name="default_language" required placeholder="ko" />
+                  </label>
+                  <label class="field">
+                    <span>시간대 <b aria-hidden="true">필수</b></span>
+                    <input name="timezone" required placeholder="Asia/Seoul" />
+                  </label>
+                  <label class="field">
+                    <span>작성자 표시명</span>
+                    <input name="author_name" autocomplete="name" />
+                  </label>
+                  <label class="field">
+                    <span>라이선스</span>
+                    <input name="license" placeholder="예: CC BY 4.0" />
+                  </label>
+                </div>
+              </section>
+
+              <section class="form-section" aria-labelledby="address-heading">
+                <div class="section-heading">
+                  <span>02</span>
+                  <div>
+                    <h2 id="address-heading">공개 주소</h2>
+                    <p>아직 공개하지 않는다면 비워두고 오프라인으로 시작할 수 있습니다.</p>
+                  </div>
+                </div>
+                <label class="field">
+                  <span>전체 공개 URL</span>
+                  <input
+                    name="public_url"
+                    type="url"
+                    inputmode="url"
+                    placeholder="https://example.github.io/library/"
+                  />
+                  <small>저장할 때 origin과 사이트 접두사로 분리합니다.</small>
+                </label>
+              </section>
+
+              <section id="connection-section" class="form-section" aria-labelledby="connection-heading">
+                <div class="section-heading">
+                  <span>03</span>
+                  <div>
+                    <h2 id="connection-heading">원본과 배포 연결</h2>
+                    <p>저장소 연결은 선택 사항이며 현재 프로그램 저장소에서 자동 추정하지 않습니다.</p>
+                  </div>
+                </div>
+                <div class="connection-grid">
+                  <div class="connection-row">
+                    <span>원본 저장소</span>
+                    <strong id="source-connection">미연결</strong>
+                    <small>W28 이후 인증·권한과 함께 설정</small>
+                  </div>
+                  <div class="connection-row">
+                    <span>배포 저장소</span>
+                    <strong id="deployment-connection">미연결</strong>
+                    <small>Pages 대상과 결과를 별도로 확인</small>
+                  </div>
+                </div>
+              </section>
+
+              <div class="form-actions">
+                <p>자동 저장하지 않습니다. <kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>S</kbd>로 저장할 수 있습니다.</p>
+                <div>
+                  <button id="reload-button" type="button" class="btn" data-variant="outline">
+                    다시 읽기
+                  </button>
+                  <button id="save-button" type="submit" class="btn">설정 저장</button>
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <section id="content-placeholder-view" class="content-view" hidden>
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">CONTENT WORKSPACE</p>
+                <h1 id="placeholder-title">경론</h1>
+                <p id="placeholder-intro" class="page-intro"></p>
+              </div>
+              <span class="phase-badge">준비 중</span>
+            </div>
+            <div class="empty-state">
+              <span class="empty-number" aria-hidden="true">00</span>
+              <h2 id="empty-title">아직 등록된 경론이 없습니다</h2>
+              <p id="empty-description">
+                프로젝트 기반이 준비되었습니다. 콘텐츠 스키마와 편집 기능은 W05 이후 연결합니다.
+              </p>
+              <button type="button" class="btn" data-variant="outline" data-view-link="settings">
+                사이트 설정 보기
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="live-region" class="sr-only" aria-live="polite"></div>
+  </body>
+</html>
