@@ -16,7 +16,7 @@
 |[화면 명세](docs/ui-spec.md)|공개 사이트·경론 읽기·로컬 편집기와 접근성|
 |[기술 명세](docs/technical-spec.md)|실행 환경·모듈·API 경계·저장·빌드·보안·배포|
 |[개발 계획](docs/development-plan.md)|작업 단위·의존성·테스트·완료 조건|
-|[결정 기록](docs/decisions.md)|채택·변경한 D01–D24, 이전 쟁점의 처리와 남은 검증|
+|[결정 기록](docs/decisions.md)|채택·변경한 D01–D26, 이전 쟁점의 처리와 남은 검증|
 
 2026-10-29 사용자가 설계 추천안 적용과 역할별 문서 통합을 승인했다. 위 문서가 현재 개발 기준이며, [기존 문서 아카이브](docs/archive/README.md)는 개정 이력 확인용이다. 아카이브에 남은 ‘미결정’과 과거의 URL/저장 예시는 현재 기준을 대체하지 않는다.
 
@@ -63,6 +63,8 @@ npm run dev
 ```sh
 npm run dev -- --project /absolute/user-project
 ```
+
+이 방식은 현재 개발·진단용 진입점이다. 완성판은 제품 실행 명령 또는 앱 아이콘이 서버 준비 후 브라우저를 자동으로 열고 임시 세션을 내부 전달하여 사용자가 토큰·포트·URL을 직접 관리하지 않도록 한다. 구체 실행기/패키징은 [D26](docs/decisions.md#accepted)과 [W33](docs/development-plan.md)에 따라 지원 운영체제에서 검증한 뒤 구현한다.
 
 화면에서 사이트명·설명·언어·시간대·작성자·라이선스·공개 URL을 확인하고 명시적으로 저장한다. GitHub 연결 없이 오프라인으로 시작할 수 있으며 초기화 후 경론 목록 자리로 이동한다. 경로 선택은 실행 인자로만 고정하고 화면에서 다른 루트로 바꾸지 않는다. 계약은 [W03 서버](docs/technical-spec.md#w03-server-contract)와 [W04 UI](docs/technical-spec.md#w04-admin-contract)를 따른다.
 
