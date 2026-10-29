@@ -11,6 +11,7 @@
   },
   "scripts": {
     "check": "node scripts/check-environment.mjs",
+    "dev": "node scripts/dev.mjs",
     "project": "node scripts/project.mjs",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",

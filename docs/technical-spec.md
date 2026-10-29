@@ -2,7 +2,7 @@
 
 - 통합 개정 1.0 · 2026-10-29 · 현재 개발 기준
 - 담당: 프로그램 구조·실행·API 경계·파일 변경/복구·변환·검증·빌드·인증/배포.
-- 데이터 규칙은 [콘텐츠 명세](content-spec.md), 상호작용은 [화면 명세](ui-spec.md)가 기준이다. W01–W02 코드/패키지는 있으며 로컬 서버·UI·콘텐츠 기능은 아직 없다.
+- 데이터 규칙은 [콘텐츠 명세](content-spec.md), 상호작용은 [화면 명세](ui-spec.md)가 기준이다. W01–W03 기반/프로젝트/로컬 API는 있으며 UI·콘텐츠 기능은 아직 없다.
 
 <a id="architecture"></a>
 ## 1. 실행 영역과 디렉터리
@@ -119,6 +119,26 @@ Basecoat의 소스 CSS/Tailwind 빌드와 이미 컴파일된 배포 파일을 �
 - 공개 URL을 생략한 초기화는 `base_url: null`, `base_path: "/"`, 원본/배포 저장소 `null`로 시작한다. 네트워크·Git/gh·원격 저장소 생성/확인은 실행하지 않는다.
 
 W02는 단일 설정 파일의 안전한 교체까지만 담당한다. 일반 원본의 다중 파일 작업 기록·백업·복구는 W06, HTTP 요청/허용 루트 고정과 오류 정제는 W03에서 확장한다.
+
+<a id="w03-server-contract"></a>
+### 3.4 W03 서버·요청·경로 계약
+
+`npm run dev -- --project <path> [--port <number>]`는 Node 기본 HTTP 서버를 `127.0.0.1`에만 연다. 포트 기본값 `0`은 OS가 사용 가능한 포트를 선택하게 한다. 시작 성공 시 실제 Origin·프로젝트 루트·무작위 256비트 세션 토큰을 터미널 JSON으로 한 번 전달한다. 토큰은 프로세스 메모리에만 두며 프로젝트 설정/로그에 저장하지 않는다.
+
+|메서드/경로|보호|결과|
+|---|---|---|
+|`GET /health`|정확한 Host|민감 정보 없는 `{ "ok": true }`|
+|`GET /api/v1/project`|정확한 Host·`X-Borido-Session`; Origin이 있으면 정확히 일치|W02 프로젝트/설정·리비전·진단|
+|`PUT /api/v1/project/settings`|정확한 Host·세션·Origin, `application/json`|`settings`, `expected_revision`으로 W02 설정 저장|
+
+- 성공은 W02와 같은 `{ ok: true, project }`, 실패는 `{ ok: false, error: { code, message, details } }` JSON이다. 리비전 충돌은 409, 세션 실패 401, Host/Origin/권한 실패 403, 크기 초과 413, 미디어 타입 오류 415로 구분한다.
+- JSON 본문은 UTF-8 `application/json`만 받고 최대 65,536바이트다. 요청 대상은 최대 4,096바이트이며 쿼리, 잘못된 percent 인코딩, 인코딩 구분자/NUL, `.`/`..`, 역슬래시와 authority 형태를 거절한다.
+- API 응답은 `Cache-Control: no-store`, `X-Content-Type-Options: nosniff`를 사용한다. `Access-Control-Allow-Origin`을 보내지 않으며 OPTIONS 사전 요청도 포괄 허용하지 않는다.
+- 서버가 시작할 때 W02로 실제 루트를 한 번 고정한다. 요청에는 루트나 파일 경로를 받는 API가 없다. GET은 원본을 쓰지 않고 PUT 설정만 리비전 확인 후 변경한다.
+- `resolveProjectPath`는 후속 내부 서비스가 사용할 공통 경계다. 프로젝트 상대 경로만 받고 실제 루트 포함 여부를 비교하며 존재하는 대상/새 대상 부모의 심볼릭 링크 이탈을 차단한다. 현재 API는 원본 파일을 직접 제공하지 않는다.
+- 헤더/요청 제한과 15초 요청·5초 헤더 제한을 적용한다. 임의 셸·프로그램 실행, 정적 프로젝트 루트 노출, 런타임 루트 교체, 자동 Git/GitHub 작업은 제공하지 않는다.
+
+W04는 이 API에 로컬 편집 화면을 연결한다. W05 이후 ID 중심 콘텐츠 엔드포인트도 같은 Host/Origin/세션/본문/경로 경계를 사용하며 파일 경로를 외부 CRUD 식별자로 받지 않는다.
 
 <a id="storage"></a>
 ## 4. 저장·다중 파일 변경·복구·이행

@@ -5,7 +5,7 @@
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido)
 - 개발 기준: [문서 안내](docs/README.md)
 - 작업 지침: [AGENTS.md](AGENTS.md)
-- 현재 상태: **W01–W02 완료.** Node/npm 기반과 사용자 프로젝트 생성·열기·설정 계약을 구현했다. 서버·편집 화면·콘텐츠 기능과 사이트 배포는 아직 없다.
+- 현재 상태: **W01–W03 완료.** Node/npm 기반, 사용자 프로젝트/설정 계약과 보호된 루프백 API 서버를 구현했다. 편집 화면·콘텐츠 기능과 사이트 배포는 아직 없다.
 
 ## 문서 읽기
 
@@ -49,4 +49,12 @@ npm run project -- init /absolute/user-project \
 npm run project -- open /absolute/user-project
 ```
 
-공개 URL을 생략하면 오프라인 프로젝트로 시작한다. 전체 필드와 오류 계약은 [기술 명세의 W02 계약](docs/technical-spec.md#w02-project-contract)을 따른다. 다음 작업은 [W03](docs/development-plan.md#phase1)의 로컬 서버·요청·경로 경계다.
+공개 URL을 생략하면 오프라인 프로젝트로 시작한다. 전체 필드와 오류 계약은 [기술 명세의 W02 계약](docs/technical-spec.md#w02-project-contract)을 따른다.
+
+기존 프로젝트의 W03 API 서버는 다음처럼 시작한다. 포트를 생략하면 사용 가능한 루프백 포트를 선택하고 Origin·프로젝트 루트·이번 프로세스의 세션 토큰을 JSON으로 한 번 출력한다.
+
+```sh
+npm run dev -- --project /absolute/user-project
+```
+
+현재 서버는 프로젝트/설정 JSON API만 제공하며 편집 화면은 없다. API 계약은 [기술 명세의 W03 계약](docs/technical-spec.md#w03-server-contract)을 따른다. 다음 작업은 [W04](docs/development-plan.md#phase1)의 최초 실행·설정 UI다.
