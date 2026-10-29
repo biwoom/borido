@@ -16,9 +16,11 @@ const SITE_FIELDS = new Set([
   "base_path",
   "source_repository",
   "deployment",
+  "common_asset_ids",
 ]);
 
 const FORBIDDEN_SECRET_FIELD = /(password|passphrase|token|secret|github_pat|private_key)/i;
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
 
 function invalid(field, message) {
   throw new ProjectError("INVALID_SITE_SETTINGS", message, { field });
@@ -36,6 +38,17 @@ function optionalString(value, field) {
     invalid(field, `${field}에는 문자열이 필요합니다.`);
   }
   return value;
+}
+
+function validateCommonAssetIds(value) {
+  if (
+    !Array.isArray(value) ||
+    new Set(value).size !== value.length ||
+    value.some((id) => typeof id !== "string" || !UUID_V4.test(id))
+  ) {
+    invalid("common_asset_ids", "common_asset_ids에는 중복 없는 UUID v4 배열이 필요합니다.");
+  }
+  return [...value];
 }
 
 function validateLanguage(value) {
@@ -199,9 +212,10 @@ export function createSiteSettings({
   publicUrl = null,
   sourceRepository = null,
   deployment = null,
+  commonAssetIds = undefined,
 }) {
   const publicLocation = parsePublicUrl(publicUrl);
-  return {
+  const settings = {
     schema_version: SITE_SCHEMA_VERSION,
     site_name: requiredString(siteName, "site_name"),
     description: optionalString(description, "description"),
@@ -217,6 +231,10 @@ export function createSiteSettings({
     ),
     deployment: validateRepository(deployment, "deployment", false),
   };
+  if (commonAssetIds !== undefined) {
+    settings.common_asset_ids = validateCommonAssetIds(commonAssetIds);
+  }
+  return settings;
 }
 
 export function validateSiteSettings(value, { allowUnknown = true } = {}) {
@@ -263,6 +281,9 @@ export function validateSiteSettings(value, { allowUnknown = true } = {}) {
     ),
     deployment: validateRepository(value.deployment, "deployment", false),
   };
+  if (value.common_asset_ids !== undefined) {
+    settings.common_asset_ids = validateCommonAssetIds(value.common_asset_ids);
+  }
 
   if (settings.base_path !== value.base_path) {
     invalid("base_path", "저장된 base_path가 정규화된 형식이 아닙니다.");

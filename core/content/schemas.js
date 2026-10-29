@@ -273,6 +273,7 @@ export const siteSettingsSchema = {
       ],
     },
     deployment: { anyOf: [repositorySchema, { type: "null" }] },
+    common_asset_ids: { type: "array", items: uuid, uniqueItems: true },
   },
 };
 

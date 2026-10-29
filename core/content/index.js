@@ -44,3 +44,8 @@ export {
   staticRedirectHtml,
   withBasePath,
 } from "../url/index.js";
+export {
+  createAssetResolver,
+  MEDIA_TYPES,
+  selectPublicMedia,
+} from "../media/index.js";

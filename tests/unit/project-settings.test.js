@@ -66,6 +66,24 @@ describe("W02 site settings contract", () => {
     expect(settings.deployment.repository_url).toContain("public-site");
   });
 
+  it("validates and preserves optional common media asset IDs", () => {
+    const id = "20000000-0000-4000-8000-000000000001";
+    const settings = createSiteSettings({
+      siteName: "공통 자산 설정",
+      defaultLanguage: "ko",
+      timezone: "Asia/Seoul",
+      commonAssetIds: [id],
+    });
+    expect(settings.common_asset_ids).toEqual([id]);
+    expect(validateSiteSettings(settings).settings.common_asset_ids).toEqual([id]);
+    expect(() => createSiteSettings({
+      siteName: "잘못된 공통 자산",
+      defaultLanguage: "ko",
+      timezone: "Asia/Seoul",
+      commonAssetIds: ["not-uuid"],
+    })).toThrow(/UUID v4/);
+  });
+
   it("rejects credentials embedded in repository URLs", () => {
     expect(() =>
       createSiteSettings({

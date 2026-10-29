@@ -218,6 +218,7 @@ function siteSettingsFromInput(input, existing = null) {
     publicUrl: input.public_url || null,
     sourceRepository: existing?.source_repository ?? null,
     deployment: existing?.deployment ?? null,
+    commonAssetIds: existing?.common_asset_ids,
   });
 }
 
