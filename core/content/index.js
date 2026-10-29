@@ -10,3 +10,4 @@ export {
   taxonomySchema,
   urlHistorySchema,
 } from "./schemas.js";
+export { evaluatePublication, selectPublicRecords } from "./visibility.js";
