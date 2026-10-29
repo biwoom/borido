@@ -1,0 +1,73 @@
+{
+  "archived_at": "2026-10-29",
+  "purpose": "Preserve pre-integration documents byte-for-byte; current specifications are in docs/.",
+  "algorithm": "SHA-256",
+  "entries": [
+    {
+      "original_path": "AGENTS.md",
+      "sha256": "545e1d0e97ffdb3b71da95714e3db8dda580fd8482ef6d40c88a3b36c5f3f564",
+      "bytes": 11209,
+      "archive_path": "docs/archive/2026-10-29-review/AGENTS-draft.md"
+    },
+    {
+      "original_path": "개발 로드맵.md",
+      "sha256": "2e0a9a7bbe0c2685958e51a59f634ab2ba0e12487669d5ac17a5632a0d75c84e",
+      "bytes": 17583,
+      "archive_path": "docs/archive/2026-10-29-baseline/개발 로드맵.md"
+    },
+    {
+      "original_path": "개발 작업 계획.md",
+      "sha256": "c037c27cfcd43b223753ab15f0cc92059b8bf852c46227dd85c03d58f3034328",
+      "bytes": 24516,
+      "archive_path": "docs/archive/2026-10-29-review/개발 작업 계획.md"
+    },
+    {
+      "original_path": "경론 읽기 화면 상세 명세서 v1.0.md",
+      "sha256": "a9b064c123564f56043e8ffe44d64adac836eecf7f0db027b4f4e1a382df4136",
+      "bytes": 25786,
+      "archive_path": "docs/archive/2026-10-29-baseline/경론 읽기 화면 상세 명세서 v1.0.md"
+    },
+    {
+      "original_path": "기술 설계 및 개발 계획서 v1.0.md",
+      "sha256": "9346f4cf96d9293524f436e049672ced6acc7308dae4c5523ce8b5dd97b02dce",
+      "bytes": 40922,
+      "archive_path": "docs/archive/2026-10-29-baseline/기술 설계 및 개발 계획서 v1.0.md"
+    },
+    {
+      "original_path": "기획문서 v0.2.md",
+      "sha256": "57169013881b7169f20900af59e06dad9e371b126590f6d5a5a31c2d1cf427af",
+      "bytes": 25132,
+      "archive_path": "docs/archive/2026-10-29-baseline/기획문서 v0.2.md"
+    },
+    {
+      "original_path": "로컬 편집기 설계서 v1.1.md",
+      "sha256": "1fbc21fd956ed2e5d81f6c36be08dce6405601760327d702217b87268a97d6a9",
+      "bytes": 31810,
+      "archive_path": "docs/archive/2026-10-29-baseline/로컬 편집기 설계서 v1.1.md"
+    },
+    {
+      "original_path": "문서 검토 및 결정 과제.md",
+      "sha256": "7256580028c249c49f9b51d031f72c21d0b17a93e58ed29b640f059f58e64343",
+      "bytes": 29642,
+      "archive_path": "docs/archive/2026-10-29-review/문서 검토 및 결정 과제.md"
+    },
+    {
+      "original_path": "설계 대안 및 문서 통합 제안.md",
+      "sha256": "a72545ac80d8c9ac001b06e62a0c6ff05c6b2b8b8d32585fb4e801f928d1fba6",
+      "bytes": 45735,
+      "archive_path": "docs/archive/2026-10-29-review/설계 대안 및 문서 통합 제안.md"
+    },
+    {
+      "original_path": "정적 사이트 화면 명세서 v1.0.md",
+      "sha256": "3032cb37a97d8aec13179d7db0f6b664c8fc6eae11477ed792906d168c8b1a6c",
+      "bytes": 32743,
+      "archive_path": "docs/archive/2026-10-29-baseline/정적 사이트 화면 명세서 v1.0.md"
+    },
+    {
+      "original_path": "콘텐츠 데이터 및 파일 구조 명세서 v1.0.md",
+      "sha256": "4faf1ec6fff5aadb1d9c5e47aed57c956c09ab6864e70ec2a5d5ba150d8d3070",
+      "bytes": 40490,
+      "archive_path": "docs/archive/2026-10-29-baseline/콘텐츠 데이터 및 파일 구조 명세서 v1.0.md"
+    }
+  ]
+}
