@@ -1,5 +1,6 @@
 {% extends "base.njk" %}
 {% block content %}
-<section class="hero"><h1>{{ page.title }}</h1>{% if page.description %}<p>{{ page.description }}</p>{% endif %}</section>
+<section class="hero"><p class="eyebrow">불교 문헌을 위한 조용한 자료실</p><h1>{{ page.title }}</h1>{% if page.description %}<p>{{ page.description }}</p>{% endif %}{% if categories_url %}<p><a class="primary-link" href="{{ categories_url }}">경론 분류에서 시작하기</a></p>{% endif %}</section>
 <ul class="collection-grid">{% for item in collections %}<li><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.count }}</span></a></li>{% endfor %}</ul>
+{% if recent.length %}<section class="recent"><h2>최근 콘텐츠</h2><ul class="content-list">{% for item in recent %}<li><p class="eyebrow">{{ item.type_label }}</p><a href="{{ item.url }}">{{ item.title }}</a></li>{% endfor %}</ul></section>{% endif %}
 {% endblock %}

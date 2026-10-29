@@ -1,0 +1,10 @@
+{% extends "base.njk" %}
+{% block content %}
+<section>
+  <p class="eyebrow">경론 탐색</p>
+  <h1>{{ page.title }}</h1>
+  <p class="description">{{ page.description }}</p>
+  {% if page.groups.length %}{% for group in page.groups %}<section class="taxonomy-group"><h2>{{ group.title }}</h2>{% if group.description %}<p>{{ group.description }}</p>{% endif %}<ul class="content-list">{% for section in group.sections %}<li><a href="{{ section.url }}">{{ section.title }}</a><span class="count">{{ section.count }}편</span>{% if section.description %}<p>{{ section.description }}</p>{% endif %}</li>{% endfor %}</ul></section>{% endfor %}
+  {% else %}<p class="empty">공개 경론 분류가 없습니다.</p>{% endif %}
+</section>
+{% endblock %}

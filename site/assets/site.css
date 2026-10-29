@@ -2,21 +2,33 @@
 * { box-sizing: border-box; }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: system-ui, sans-serif; line-height: 1.7; }
 a { color: inherit; text-decoration-color: var(--gold); text-underline-offset: .2em; }
-.site-header, main, footer { width: min(100% - 2rem, 70rem); margin-inline: auto; }
+.site-header, main, footer { width: min(100% - 2rem, 75rem); margin-inline: auto; }
 .site-header { display: flex; gap: 2rem; align-items: center; justify-content: space-between; min-height: 4rem; border-bottom: 1px solid var(--line); }
 .site-name { font-weight: 800; text-decoration: none; }
 nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+nav a[aria-current="page"] { font-weight: 800; text-decoration-color: var(--gold); text-decoration-thickness: .18rem; }
 main { padding-block: 3rem 5rem; }
 article, section { max-width: 50rem; margin-inline: auto; }
 h1, h2, h3 { line-height: 1.25; }
 .eyebrow, .description, footer { color: var(--muted); }
 .eyebrow { font-weight: 700; }
+.breadcrumbs { max-width: 50rem; margin: 0 auto 2rem; color: var(--muted); font-size: .9rem; }
+.breadcrumbs ol { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.breadcrumbs li:not(:last-child)::after { margin-left: .4rem; content: "/"; color: #9ca3af; }
+.primary-link { display: inline-block; padding: .65rem 1rem; border-radius: .5rem; color: #111; background: var(--gold); font-weight: 800; text-decoration: none; }
+.metadata { display: grid; gap: .5rem; margin-block: 2rem; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem; }
+.metadata div { display: grid; grid-template-columns: minmax(6rem, 8rem) 1fr; gap: 1rem; }
+.metadata dt { color: var(--muted); font-weight: 700; }
+.metadata dd { margin: 0; }
 .prose { margin-top: 2.5rem; }
 .prose img { max-width: 100%; height: auto; }
 .prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
 .prose th, .prose td { padding: .5rem; border: 1px solid var(--line); }
 .content-list, .collection-grid, .tags { padding: 0; list-style: none; }
 .content-list li { padding-block: 1rem; border-bottom: 1px solid var(--line); }
+.content-list li > .eyebrow { margin: 0; font-size: .8rem; }
+.count { float: right; color: var(--muted); }
+.children, .recent, .taxonomy-group { margin-top: 3rem; }
 .collection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; }
 .collection-grid a { display: flex; justify-content: space-between; padding: 1rem; border: 1px solid var(--line); text-decoration: none; }
 .collection-grid span { color: var(--green); font-weight: 800; }

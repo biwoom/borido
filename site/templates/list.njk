@@ -1,10 +1,11 @@
 {% extends "base.njk" %}
 {% block content %}
 <section>
+  <p class="eyebrow">공개 자료</p>
   <h1>{{ page.title }}</h1>
   {% if page.description %}<p class="description">{{ page.description }}</p>{% endif %}
   {% if page.items.length %}
-  <ul class="content-list">{% for item in page.items %}<li><a href="{{ item.url }}">{{ item.title }}</a>{% if item.description %}<p>{{ item.description }}</p>{% endif %}</li>{% endfor %}</ul>
+  <ul class="content-list">{% for item in page.items %}<li><a href="{{ item.url }}">{{ item.title }}</a>{% if item.meta %}<span class="count">{{ item.meta }}</span>{% endif %}{% if item.description %}<p>{{ item.description }}</p>{% endif %}</li>{% endfor %}</ul>
   {% else %}<p class="empty">공개된 항목이 없습니다.</p>{% endif %}
 </section>
 {% endblock %}

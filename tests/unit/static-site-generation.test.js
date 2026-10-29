@@ -76,4 +76,44 @@ describe("W14 page templates and public indexes", () => {
     expect(result.ok).toBe(false);
     expect(result.diagnostics).toContainEqual(expect.objectContaining({ code: "STATIC_OUTPUT_COLLISION" }));
   });
+
+  it("builds classification, text overview, area entry, and real breadcrumbs", async () => {
+    const areaId = "10000000-0000-4000-8000-000000000005";
+    const nodeId = "10000000-0000-4000-8000-000000000006";
+    const text = record(ids.text, "text", "법구경", "dhammapada", {
+      description: "게송 모음",
+      canon: { canon_id: "taisho", section_id: "sutra", catalog_number: "T0210" },
+      authors: ["법구"],
+    });
+    const area = { ...record(areaId, "text_area", "번역", "translation", { area: "translation" }), parent_id: ids.text, text_id: ids.text, area: "translation" };
+    const node = { ...record(nodeId, "tree_node", "제1장", "chapter-one", { node_kind: "chapter" }), parent_id: areaId, text_id: ids.text, area: "translation" };
+    const records = [text, area, node];
+    const index = {
+      records,
+      taxonomies: [{ canon_id: "taisho", name: "대정신수대장경", tradition: "한역 대장경", sections: [{ id: "sutra", slug: "sutra", name: "경장", description: "경전 분류", order: 1 }] }],
+    };
+    const urls = buildUrlIndex({ index, publicRecords: records, basePath: "/borido/" });
+    const result = await generateStaticSite({
+      site: { site_name: "보리도", description: "", default_language: "ko", author_name: "", license: "" },
+      index,
+      publicRecords: records,
+      urlIndex: urls,
+      markdownById: new Map(records.map((item) => [item.id, { html: `<p>${item.title} 개요</p>`, toc: [] }])),
+    });
+
+    const categoryIndex = result.files.find((file) => file.path === "texts/categories/index.html").content;
+    expect(categoryIndex).toContain("대정신수대장경");
+    expect(categoryIndex).toContain("경장");
+    expect(categoryIndex).toContain("1편");
+    const category = result.files.find((file) => file.path === "texts/categories/sutra/index.html").content;
+    expect(category).toContain("T0210");
+    const textPage = result.files.find((file) => file.path === "texts/dhammapada/index.html").content;
+    expect(textPage).toContain("자료 영역");
+    expect(textPage).toContain('/borido/texts/dhammapada/translation/');
+    expect(textPage).toContain("목록 번호");
+    const areaPage = result.files.find((file) => file.path === "texts/dhammapada/translation/index.html").content;
+    expect(areaPage).toContain('aria-label="현재 위치"');
+    expect(areaPage).toContain("법구경");
+    expect(areaPage).toContain('/borido/texts/dhammapada/translation/nodes/chapter-one/');
+  });
 });

@@ -4,8 +4,10 @@
   <p class="eyebrow">{{ page.type_label }}{% if page.text_title %} · {{ page.text_title }}{% endif %}</p>
   <h1>{{ page.title }}</h1>
   {% if page.description %}<p class="description">{{ page.description }}</p>{% endif %}
+  {% if page.metadata.length %}<dl class="metadata">{% for item in page.metadata %}<div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>{% endfor %}</dl>{% endif %}
   {% if page.published_at %}<p><time datetime="{{ page.published_at }}">{{ page.published_at }}</time></p>{% endif %}
   {% if page.tags.length %}<ul class="tags">{% for tag in page.tags %}<li>{{ tag }}</li>{% endfor %}</ul>{% endif %}
   <div class="prose">{{ page.body_html | safe }}</div>
+  {% if page.items.length %}<section class="children" aria-labelledby="children-title"><h2 id="children-title">{% if page.type == "text" %}자료 영역{% else %}하위 자료{% endif %}</h2><ul class="content-list">{% for item in page.items %}<li><p class="eyebrow">{{ item.type_label }}</p><a href="{{ item.url }}">{{ item.title }}</a>{% if item.description %}<p>{{ item.description }}</p>{% endif %}</li>{% endfor %}</ul></section>{% endif %}
 </article>
 {% endblock %}

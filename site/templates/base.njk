@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="{{ page.description or site.description }}">
   <link rel="stylesheet" href="{{ site.stylesheet_url }}">
-  <title>{{ page.title }} · {{ site.name }}</title>
+  <title>{% if page.nav_key == "home" %}{{ site.name }}{% else %}{{ page.title }} · {{ site.name }}{% endif %}</title>
 </head>
 <body>
   <header class="site-header">
     <a class="site-name" href="{{ site.base_path }}">{{ site.name }}</a>
     <nav aria-label="주요 메뉴">
-      {% for item in navigation %}<a href="{{ item.url }}">{{ item.title }}</a>{% endfor %}
+      {% for item in navigation %}<a href="{{ item.url }}"{% if item.key == page.nav_key %} aria-current="page"{% endif %}>{{ item.title }}</a>{% endfor %}
     </nav>
   </header>
-  <main>{% block content %}{% endblock %}</main>
-  <footer><p>{{ site.author }}{% if site.license %} · {{ site.license }}{% endif %}</p></footer>
+  <main>
+    {% if page.breadcrumbs.length %}<nav class="breadcrumbs" aria-label="현재 위치"><ol>{% for item in page.breadcrumbs %}<li>{% if item.current %}<span aria-current="page">{{ item.title }}</span>{% else %}<a href="{{ item.url }}">{{ item.title }}</a>{% endif %}</li>{% endfor %}</ol></nav>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>{% if site.author or site.license %}<p>{% if site.author %}{{ site.author }}{% endif %}{% if site.author and site.license %} · {% endif %}{% if site.license %}{{ site.license }}{% endif %}</p>{% endif %}<p><a href="{{ site.base_path }}">{{ site.name }}</a></p></footer>
 </body>
 </html>
