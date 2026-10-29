@@ -204,6 +204,15 @@ W05 이후 ID 중심 콘텐츠 엔드포인트도 같은 Host/Origin/세션/본�
 
 경론·영역·구조의 선택 `_index.md`만 소유 개요로 읽고 실제 `text_document` 본문과 구분한다. 인덱스는 `overview_text_by_id`와 직렬화 가능한 `trees`를 제공한다. 본문 자식, 없는/잘못된 부모, 세 영역 누락/불일치, 본문 파일 누락과 같은 기존 진단에 더해 같은 경론/영역 전체의 구조 slug와 본문 slug 중복을 오류로 보고한다.
 
+<a id="w10-tree-mutation-contract"></a>
+### 3.10 W10 트리 변경·URL 영향·복구 계약
+
+`createTreeRecord`, `reorderTreeRecord`, `inspectTreeMove`/`moveTreeRecord`, `inspectTreeDeletion`/`deleteTreeRecord`, `restoreTreeOperation`이 구조 노드와 본문 문서를 다룬다. 생성 기본 상태는 `draft`이며 구조는 명시 `nodeKind`, 본문은 `body.md`를 요구한다. 정렬은 메타데이터 SHA-256 리비전을 요구한다. 이동·삭제는 현재 메타데이터와 하위/참조/URL을 포함한 영향 리비전이 모두 일치할 때만 실행한다.
+
+이동은 자기 자신/하위, 본문 부모, 대상 폴더와 새 경론·영역 전체의 구조/본문 slug 충돌을 거절한다. 같은 경론·영역 안에서는 공개 URL이 부모 경로와 무관하므로 URL 이력을 쓰지 않는다. 경론/영역이 달라지면 대상과 모든 하위 구조/본문의 과거 URL을 `config/url-history.json`에 대상 UUID와 기록한다. URL 재사용·연쇄/순환의 전체 검증은 W12에서 다시 수행한다.
+
+삭제는 하위와 외부 `related_documents` 참조를 보고하고 참조를 자동 제거하지 않는다. 성공한 삭제 URL은 `.borido/tree-operations` manifest가 보존되는 동안 자동 재사용하지 않는다. 이동/삭제는 프로젝트 쓰기 직렬화, 준비/completed/rolled_back/recovered manifest, 합성 실패 역순 복원과 완료 작업 명시 복구를 제공한다. 이동 후 메타데이터나 URL 이력이 다시 바뀌면 과거 작업 복구가 이를 덮어쓰지 않는다.
+
 <a id="storage"></a>
 ## 4. 저장·다중 파일 변경·복구·이행
 

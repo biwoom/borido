@@ -24,3 +24,13 @@ export {
 export { findIncomingReferences, validateContentReferences } from "./references.js";
 export { validateTextBibliography } from "./taxonomy.js";
 export { buildTextTrees } from "./tree.js";
+export {
+  createTreeRecord,
+  deleteTreeRecord,
+  inspectTreeDeletion,
+  inspectTreeMove,
+  moveTreeRecord,
+  reorderTreeRecord,
+  restoreTreeOperation,
+  treeRecordUrl,
+} from "./tree-mutations.js";
