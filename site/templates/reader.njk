@@ -20,8 +20,10 @@
 <nav class="area-switch" aria-label="자료 영역">
   {% for area in page.reader.areas %}<a href="{{ area.url }}"{% if area.current %} aria-current="page"{% endif %}{% if area.multiple %} title="명시된 대응 문서가 여러 개여서 영역 개요로 이동합니다"{% endif %}>{{ area.label }}</a>{% endfor %}
 </nav>
+{% for area in page.reader.areas %}{% if area.multiple %}<details class="area-choices"><summary>{{ area.label }} 대응 문서 선택</summary><ul>{% for choice in area.choices %}<li><a href="{{ choice.url }}">{{ choice.title }}</a></li>{% endfor %}</ul></details>{% endif %}{% endfor %}
 <div class="reader-layout">
   <nav class="reader-tree" id="reader-tree" aria-label="현재 자료 트리">
+    <button type="button" class="tree-close">자료 트리 닫기</button>
     <h2><a href="{{ page.reader.area.url }}">{{ page.reader.area.title }}</a></h2>
     {% if page.reader.tree.length %}{{ tree_nodes(page.reader.tree) }}{% else %}<p class="empty">공개 자료가 없습니다.</p>{% endif %}
   </nav>
@@ -37,6 +39,7 @@
     </div>
     <aside class="reader-panel" hidden aria-live="polite">
       <div class="reader-panel-head"><h2></h2><button type="button" class="panel-close" aria-label="패널 닫기">닫기</button></div>
+      <div class="panel-modes">{% if page.toc.length %}<button type="button" data-panel="toc" aria-label="패널 목차" aria-expanded="false">목차</button>{% endif %}{% if page.footnotes.length %}<button type="button" data-panel="footnotes" aria-label="패널 각주" aria-expanded="false">각주</button>{% endif %}</div>
       <div class="reader-panel-content"></div>
     </aside>
     <div class="prose">{{ page.body_html | safe }}</div>
@@ -44,7 +47,6 @@
       {% if page.reader.previous %}<a class="previous" href="{{ page.reader.previous.url }}"><span>이전</span>{{ page.reader.previous.title }}</a>{% endif %}
       {% if page.reader.next %}<a class="next" href="{{ page.reader.next.url }}"><span>다음</span>{{ page.reader.next.title }}</a>{% endif %}
     </nav>{% endif %}
-    <div class="footnotes-source" hidden>{% for note in page.footnotes %}<span data-footnote="{{ note.id }}">{{ note.number }}. {{ note.label }}</span>{% endfor %}</div>
   </article>
 </div>
 <script src="{{ site.base_path }}assets/reader.js" defer></script>

@@ -6,6 +6,7 @@ import nunjucks from "nunjucks";
 
 import { absolutePublicUrl, withBasePath } from "../url/index.js";
 import { AREA_LABELS, buildReaderData } from "./reader.js";
+import { createAssetResolver } from "../media/index.js";
 
 const SITE_ROOT = fileURLToPath(new URL("../../site/", import.meta.url));
 const TYPE_LABELS = Object.freeze({
@@ -50,7 +51,7 @@ function compareContent(left, right) {
       String(left.data?.published_at ?? ""),
       "en",
     );
-    if (date) return date;
+    return date || left.id.localeCompare(right.id, "en");
   }
   const order = (left.order ?? 0) - (right.order ?? 0);
   return order || left.title.localeCompare(right.title, "ko") || left.id.localeCompare(right.id, "en");
@@ -146,6 +147,12 @@ function publicChildren(record, publicById, urlIndex) {
     }));
 }
 
+function featuredImage(record, index, urlIndex) {
+  const asset = (index.assets ?? []).find((asset) => asset.id === record.data?.featured_media_id && asset.media_type.startsWith("image/"));
+  const resolved = asset && createAssetResolver(index, { basePath: urlIndex.base_path })({ id: asset.id });
+  return resolved?.ok ? { url: resolved.url, alt: asset.alt ?? "" } : null;
+}
+
 function pageRecord(record, entry, markdown, recordsById, publicById, urlIndex, index, site) {
   const children = publicChildren(record, publicById, urlIndex);
   const page = {
@@ -161,6 +168,11 @@ function pageRecord(record, entry, markdown, recordsById, publicById, urlIndex, 
     footnotes: markdown?.footnotes ?? [],
     published_at: record.data?.published_at ?? null,
     author: record.data?.author ?? null,
+    published_label: record.data?.published_at ? new Intl.DateTimeFormat("ko-KR", { timeZone: site.timezone ?? "UTC", dateStyle: "medium" }).format(new Date(record.data.published_at)) : null,
+    source_text: record.data?.source_text ?? "",
+    sources: (record.data?.sources ?? []).map((source) => ({ ...source, url: /^https?:\/\//iu.test(source.url ?? "") ? source.url : null })),
+    adaptation_note: record.data?.adaptation_note ?? (record.data?.adapted ? "각색한 이야기입니다." : ""),
+    featured_image: featuredImage(record, index, urlIndex),
     tags: record.data?.tags ?? [],
     nav_key: navigationKey(record.type, record.id),
     breadcrumbs: recordBreadcrumbs(record, recordsById, urlIndex),
@@ -288,6 +300,7 @@ export async function generateStaticSite({
       license: site.license,
       base_path: urlIndex.base_path,
       stylesheet_url: withBasePath("/assets/site.css", urlIndex.base_path),
+      basecoat_url: withBasePath("/assets/basecoat-vega.css", urlIndex.base_path),
     },
     navigation,
   };
@@ -331,6 +344,11 @@ export async function generateStaticSite({
         title: record.title,
         description: record.data?.description ?? "",
         url: urlIndex.by_id.get(record.id)?.path,
+        published_at: record.data?.published_at ?? null,
+        featured_image: featuredImage(record, index, urlIndex),
+        published_label: record.data?.published_at ? new Intl.DateTimeFormat("ko-KR", { timeZone: site.timezone ?? "UTC", dateStyle: "medium" }).format(new Date(record.data.published_at)) : null,
+        author: record.data?.author ?? null,
+        tags: record.data?.tags ?? [],
       })),
     };
     files.push({
@@ -394,6 +412,7 @@ export async function generateStaticSite({
     .map((path) => absolutePublicUrl(urlIndex, path));
   files.push({ path: "sitemap.xml", content: sitemapXml(sitemapUrls), source_ids: pages.map((page) => page.id) });
   files.push({ path: "assets/site.css", content: await readFile(join(SITE_ROOT, "assets", "site.css"), "utf8"), source_ids: [] });
+  files.push({ path: "assets/basecoat-vega.css", content: await readFile(join(SITE_ROOT, "..", "node_modules/basecoat-css/dist/basecoat-vega.cdn.min.css"), "utf8"), source_ids: [] });
   files.push({ path: "assets/reader.js", content: await readFile(join(SITE_ROOT, "assets", "reader.js"), "utf8"), source_ids: [] });
   files.push({ path: "assets/search.js", content: await readFile(join(SITE_ROOT, "assets", "search.js"), "utf8"), source_ids: [] });
   files.push({ path: "robots.txt", content: `User-agent: *\nAllow: ${urlIndex.base_path}\n`, source_ids: [] });
@@ -408,7 +427,9 @@ export async function generateStaticSite({
   }
 
   const paths = new Set();
-  const diagnostics = [];
+  const diagnostics = publicRecords.filter((record) => record.type === "page" && record.data?.template && record.data.template !== "default").map((record) => ({
+    level: "error", code: "STATIC_TEMPLATE_UNSUPPORTED", message: "지원하지 않는 페이지 템플릿입니다. 현재 허용 이름은 default입니다.", details: { id: record.id, template: record.data.template },
+  }));
   for (const file of files) {
     if (paths.has(file.path)) {
       diagnostics.push({ level: "error", code: "STATIC_OUTPUT_COLLISION", message: "정적 출력 경로가 중복되었습니다.", details: { path: file.path } });

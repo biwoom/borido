@@ -3,6 +3,7 @@ const input = form?.querySelector("input");
 const status = document.querySelector(".search-status");
 const list = document.querySelector(".search-results");
 let entries = null;
+let requestVersion = 0;
 
 async function loadIndex() {
   if (entries) return entries;
@@ -20,6 +21,7 @@ function normalize(value) {
 
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const version = ++requestVersion;
   list.replaceChildren();
   const query = normalize(input.value);
   if (!query) {
@@ -28,6 +30,7 @@ form?.addEventListener("submit", async (event) => {
   }
   try {
     const data = await loadIndex();
+    if (version !== requestVersion) return;
     const results = data.map((item) => {
       const title = normalize(item.title);
       const haystack = normalize(`${item.title} ${item.description} ${item.text} ${item.text_title ?? ""} ${item.area ?? ""}`);
@@ -39,8 +42,13 @@ form?.addEventListener("submit", async (event) => {
       link.href = result.item.url;
       link.textContent = result.item.title;
       const type = document.createElement("span");
-      type.textContent = result.item.type;
+      type.textContent = ({ text: "경론", text_area: "자료 영역", tree_node: "구조", text_document: "경론 문서", story: "이야기", blog: "블로그", page: "페이지", taxonomy_section: "경론 분류" })[result.item.type] ?? result.item.type;
       item.append(link, type);
+      if (result.item.text_title) {
+        const context = document.createElement("p");
+        context.textContent = [result.item.text_title, ({ translation: "번역", original: "원문", research: "연구" })[result.item.area]].filter(Boolean).join(" · ");
+        item.append(context);
+      }
       if (result.item.description) {
         const description = document.createElement("p");
         description.textContent = result.item.description;
@@ -50,6 +58,7 @@ form?.addEventListener("submit", async (event) => {
     }
     status.textContent = results.length ? `${results.length}개 결과` : "일치하는 공개 자료가 없습니다.";
   } catch {
+    if (version !== requestVersion) return;
     status.textContent = "검색 자료를 불러오지 못했습니다.";
   }
 });

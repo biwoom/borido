@@ -5,7 +5,11 @@
   <h1>{{ page.title }}</h1>
   {% if page.description %}<p class="description">{{ page.description }}</p>{% endif %}
   {% if page.metadata.length %}<dl class="metadata">{% for item in page.metadata %}<div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>{% endfor %}</dl>{% endif %}
-  {% if page.published_at %}<p><time datetime="{{ page.published_at }}">{{ page.published_at }}</time></p>{% endif %}
+  {% if page.published_at %}<p><time datetime="{{ page.published_at }}">{{ page.published_label }}</time>{% if page.author %} · {{ page.author }}{% endif %}</p>{% endif %}
+  {% if page.featured_image %}<figure class="prose"><img src="{{ page.featured_image.url }}" alt="{{ page.featured_image.alt }}"></figure>{% endif %}
+  {% if page.source_text or page.sources.length %}<section aria-label="이야기 출처"><h2>출처</h2>{% if page.source_text %}<p>{{ page.source_text }}</p>{% endif %}<ul>{% for source in page.sources %}<li>{% if source.url %}<a href="{{ source.url }}">{{ source.title }}</a>{% else %}{{ source.title }}{% endif %} · {{ source.locator }}</li>{% endfor %}</ul></section>{% endif %}
+  {% if page.adaptation_note %}<p class="adaptation-note">{{ page.adaptation_note }}</p>{% endif %}
+  {% if page.type == "page" and page.toc.length %}<nav aria-label="문서 목차"><ol>{% for heading in page.toc %}<li><a href="#{{ heading.id }}">{{ heading.text }}</a></li>{% endfor %}</ol></nav>{% endif %}
   {% if page.tags.length %}<ul class="tags">{% for tag in page.tags %}<li>{{ tag }}</li>{% endfor %}</ul>{% endif %}
   <div class="prose">{{ page.body_html | safe }}</div>
   {% if page.items.length %}<section class="children" aria-labelledby="children-title"><h2 id="children-title">{% if page.type == "text" %}자료 영역{% else %}하위 자료{% endif %}</h2><ul class="content-list">{% for item in page.items %}<li><p class="eyebrow">{{ item.type_label }}</p><a href="{{ item.url }}">{{ item.title }}</a>{% if item.description %}<p>{{ item.description }}</p>{% endif %}</li>{% endfor %}</ul></section>{% endif %}

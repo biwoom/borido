@@ -56,6 +56,10 @@ describe("W18 reader tree and document movement", () => {
     const expandedUrls = buildUrlIndex({ index: expandedIndex, publicRecords: expanded, basePath: "/borido/" });
     expect(buildReaderData({ record: changedSecond, publicRecords: expanded, urlIndex: expandedUrls, site: {} }).areas.find((area) => area.area === "original")).toMatchObject({
       url: `/borido/texts/dhammapada/original/`, multiple: true,
+      choices: [
+        { title: "원문 하나", url: "/borido/texts/dhammapada/original/original-one/" },
+        { title: "원문 둘", url: "/borido/texts/dhammapada/original/original-two/" },
+      ],
     });
   });
 

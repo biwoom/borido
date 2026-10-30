@@ -17,7 +17,7 @@ describe("W14 page templates and public indexes", () => {
   it("renders every public top-level type, lists, search, sitemap, and local CSS", async () => {
     const records = [
       record(ids.text, "text", "법구경", "dhammapada", { canon: { section_id: "sutra" } }),
-      record(ids.story, "story", "황금 이야기", "golden-story", { description: "이야기 설명" }),
+      record(ids.story, "story", "황금 이야기", "golden-story", { description: "이야기 설명", source_text: "출처 서지", adapted: true, adaptation_note: "현대어 각색" }),
       record(ids.blog, "blog", "새 소식", "news", { published_at: "2026-10-30T00:00:00Z", tags: ["공지"] }),
       record(ids.page, "page", "소개 <script>", "about", { menu_visible: true, menu_order: 1 }),
     ];
@@ -51,6 +51,12 @@ describe("W14 page templates and public indexes", () => {
     expect(searchPage).toContain('data-search-index="/borido/search-index.json"');
     expect(result.search.find((item) => item.id === ids.story)).toMatchObject({ text: "본문 story", url: "/borido/stories/golden-story/" });
     expect(result.sitemap_urls).toContain("https://example.test/borido/stories/golden-story/");
+    const story = result.files.find((file) => file.path === "stories/golden-story/index.html").content;
+    expect(story).toContain("출처 서지");
+    expect(story).toContain("현대어 각색");
+    expect(story).not.toContain('class="reader-tree"');
+    const blog = result.files.find((file) => file.path === "blog/news/index.html").content;
+    expect(blog).toContain("2026. 10. 30.");
   });
 
   it("renders useful empty collection pages without private records", async () => {
@@ -64,6 +70,17 @@ describe("W14 page templates and public indexes", () => {
     });
     expect(result.files.find((file) => file.path === "stories/index.html").content).toContain("공개된 항목이 없습니다.");
     expect(result.search).toEqual([]);
+  });
+
+  it("rejects unknown page template names instead of silently rendering them", async () => {
+    const records = [record(ids.page, "page", "소개", "about", { template: "unknown" })];
+    const index = { records, taxonomies: [] };
+    const result = await generateStaticSite({
+      site: { site_name: "보리도", description: "", default_language: "ko", author_name: "", license: "" },
+      index, publicRecords: records, urlIndex: buildUrlIndex({ index, publicRecords: records }),
+    });
+    expect(result.ok).toBe(false);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ code: "STATIC_TEMPLATE_UNSUPPORTED" }));
   });
 
   it("rejects a redirect that collides with a generated page", async () => {

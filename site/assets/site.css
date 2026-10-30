@@ -21,6 +21,17 @@ h1, h2, h3 { line-height: 1.25; }
 .metadata dt { color: var(--muted); font-weight: 700; }
 .metadata dd { margin: 0; }
 .prose { margin-top: 2.5rem; }
+.prose, h1, .tree-item { overflow-wrap: anywhere; }
+.tree-level .tree-level .tree-level { padding-left: .35rem; border-left: 1px solid var(--line); }
+.reader-tree { display: block; }
+.tree-close { display: none; }
+.reader-panel-content ol:empty { display: none; }
+.reader-panel-content table { display: block; max-width: 100%; overflow-x: auto; }
+@media (min-width: 80rem) { .reader-layout.panel-open { padding-right: 21rem; } }
+@media (max-width: 42rem) {
+  .reader-tree:not([hidden]) { position: fixed; z-index: 20; inset: 0 auto 0 0; width: min(85vw, 20rem); max-height: 100vh; margin: 0; background: var(--paper); }
+  .tree-close { display: block; }
+}
 .prose img { max-width: 100%; height: auto; }
 .prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
 .prose th, .prose td { padding: .5rem; border: 1px solid var(--line); }
@@ -71,3 +82,7 @@ footer { padding-block: 2rem; border-top: 1px solid var(--line); }
 @media (max-width: 42rem) { .site-header { align-items: flex-start; flex-direction: column; padding-block: 1rem; } nav { gap: .75rem; } main { padding-top: 2rem; } .reader-layout { display: block; } .reader-tree { position: static; max-height: 16rem; margin-bottom: 2rem; } }
 @media (max-width: 42rem) { .reader-layout { display: block; } .reader-tree { max-height: 35vh; } .reader-panel { inset: auto 0 0; width: 100%; height: min(70vh, 36rem); border-radius: .8rem .8rem 0 0; } }
 @media print { .site-header, footer, .reader-tree, .area-switch, .document-tools, .reader-panel, .document-pagination { display: none !important; } main { width: 100%; padding: 0; } .reader-layout { display: block; } .reader-content { max-width: none; } }
+@media (max-width: 42rem) { .reader-panel { inset: 0 0 0 auto; width: min(90vw, 22rem); height: 100vh; border-radius: 0; } }
+@media (max-width: 42rem) { .reader-tree:not([hidden]) { position: fixed; z-index: 20; inset: 0 auto 0 0; width: min(85vw, 20rem); max-height: 100vh; margin: 0; background: var(--paper); } }
+@media print { .reader-layout.panel-open { padding-right: 0; } }
+@media (max-width: 42rem) { body:not(.reader-enhanced) .reader-tree { position: static; width: 100%; max-height: none; } }

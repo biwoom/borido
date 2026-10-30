@@ -74,7 +74,7 @@ function areaNavigation(record, publicRecords, urlIndex) {
   const related = new Set(record.type === "text_document" ? record.data?.related_documents ?? [] : []);
   return areas.map((area) => {
     const matches = publicRecords.filter((candidate) =>
-      candidate.type === "text_document" && candidate.area === area.area && related.has(candidate.id),
+      candidate.type === "text_document" && candidate.text_id === record.text_id && candidate.area === area.area && related.has(candidate.id),
     );
     const target = area.area === record.area ? record : matches.length === 1 ? matches[0] : area;
     return {
@@ -83,6 +83,7 @@ function areaNavigation(record, publicRecords, urlIndex) {
       url: urlIndex.by_id.get(target.id)?.path,
       current: area.area === record.area,
       multiple: matches.length > 1,
+      choices: matches.length > 1 ? matches.map((match) => ({ title: match.title, url: urlIndex.by_id.get(match.id)?.path })).filter((match) => match.url) : [],
     };
   }).filter((item) => item.url);
 }

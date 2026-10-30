@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="{{ page.description or site.description }}">
+  <link rel="stylesheet" href="{{ site.basecoat_url }}">
   <link rel="stylesheet" href="{{ site.stylesheet_url }}">
   <title>{% if page.nav_key == "home" %}{{ site.name }}{% else %}{{ page.title }} · {{ site.name }}{% endif %}</title>
 </head>
