@@ -3,7 +3,7 @@
 - 현재 기준: 2026-10-29 통합 개정 1.0. 사용자가 추천안 적용과 역할별 문서 통합을 승인했다.
 - 프로젝트 저장소: [biwoom/borido](https://github.com/biwoom/borido), Git 주소 `https://github.com/biwoom/borido.git`.
 - 2026-10-29 확인한 원격 공개성은 public, 기본 브랜치는 main이다. D23–D24에 따라 이 저장소의 예약 `project/` 원본과 GitHub Actions Pages 배포를 운영 목표로 하며, 실제 Pages 설정/호스팅 통과는 W28–W31 전까지 추측하지 않는다.
-- W01–W17이 완료되어 콘텐츠/변환·원자적 빌드/공개 감사, 읽기 전용 preview와 공통/분류/경론·영역 진입 공개 화면이 있다. 독서 트리·패널, 브라우저 콘텐츠 편집과 사이트 배포는 아직 없다.
+- W01–W22가 완료되어 변환/빌드/preview와 공개 탐색·독서·패널·타 유형·검색/404 흐름이 있다. 브라우저 콘텐츠 편집과 사이트 배포는 아직 없다.
 
 ## 기준 문서와 작업 범위
 
@@ -71,11 +71,11 @@ Node.js 24.x와 npm 11.x를 사용한다. 기준 검증 버전은 `.nvmrc`/`.nod
 |`npm run check`|Node/npm 환경 검사|W01 사용 가능|
 |`npm run project -- init/open …`|외부 사용자 프로젝트 생성/열기|W02 사용 가능|
 |`npm run dev`|예약 `project/`의 로컬 편집기와 루프백 API|W06 사용 가능, 외부는 `-- --project <path>`|
-|`npm test`|Vitest 단위/통합|W01–W17 전체 검사 사용 가능|
+|`npm test`|Vitest 단위/통합|W01–W22 전체 검사 사용 가능|
 |`npm run test:e2e`|Playwright 최초 실행·재열기·세션 흐름|W04 사용 가능, Chromium 필요|
 |`npm run validate -- <path>`|고정 프로젝트의 읽기 전용 원본 검증/인덱스|W05 사용 가능|
 |`npm run build [-- <path>]`|입력 재검증·실패 복원을 갖춘 전체 정적 빌드|W15 사용 가능, Git/배포 없음|
-|`npm run preview [-- --project <path>]`|마지막 성공 `dist/`의 루프백 읽기 전용 검수|W17 사용 가능, 자동 빌드/원본/API/Git 없음|
+|`npm run preview [-- --project <path>]`|마지막 성공 `dist/`의 루프백 읽기 전용 검수|W17–W22 공개 화면/404 검수, 자동 빌드/원본/API/Git 없음|
 
 프로젝트 CLI/Core는 루트 하나만 다룬다. 정확한 체크아웃 `project/`만 내부 기본 루트로 허용하고 다른 내부 경로는 계속 차단하며, 외부 프로젝트는 명시 경로로만 연다. 설정과 일반 파일 쓰기는 읽을 때 받은 SHA-256 리비전이 일치할 때만 허용한다. 여러 파일 작업은 `.borido/recovery` 사본/manifest·직렬화·롤백/명시 복구를 거치며 이 경로와 `dist/`는 Git 대상이 아니다.
 

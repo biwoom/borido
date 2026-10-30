@@ -1,0 +1,10 @@
+{% extends "base.njk" %}
+{% block content %}
+<section class="search-page">
+  <h1>{{ page.title }}</h1>
+  <form role="search" data-search-index="{{ search_index_url }}"><label for="site-search">공개 자료 검색</label><div><input id="site-search" type="search" autocomplete="off"><button type="submit">검색</button></div></form>
+  <p class="search-status" aria-live="polite">검색어를 입력하세요.</p>
+  <ol class="search-results"></ol>
+</section>
+<script src="{{ site.base_path }}assets/search.js" defer></script>
+{% endblock %}

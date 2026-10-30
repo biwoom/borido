@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import nunjucks from "nunjucks";
 
 import { absolutePublicUrl, withBasePath } from "../url/index.js";
+import { AREA_LABELS, buildReaderData } from "./reader.js";
 
 const SITE_ROOT = fileURLToPath(new URL("../../site/", import.meta.url));
 const TYPE_LABELS = Object.freeze({
@@ -16,11 +17,6 @@ const TYPE_LABELS = Object.freeze({
   blog: "블로그",
   page: "페이지",
   taxonomy_section: "경론 분류",
-});
-const AREA_LABELS = Object.freeze({
-  translation: "번역",
-  original: "원문",
-  research: "연구",
 });
 
 function outputPathFromInternal(internalPath) {
@@ -84,6 +80,7 @@ function fixedPages(basePath) {
     { key: "texts", title: "경론", url: withBasePath("/texts/", basePath) },
     { key: "stories", title: "이야기", url: withBasePath("/stories/", basePath) },
     { key: "blog", title: "블로그", url: withBasePath("/blog/", basePath) },
+    { key: "search", title: "검색", url: withBasePath("/search/", basePath) },
   ];
 }
 
@@ -149,9 +146,9 @@ function publicChildren(record, publicById, urlIndex) {
     }));
 }
 
-function pageRecord(record, entry, markdown, recordsById, publicById, urlIndex, index) {
+function pageRecord(record, entry, markdown, recordsById, publicById, urlIndex, index, site) {
   const children = publicChildren(record, publicById, urlIndex);
-  return {
+  const page = {
     id: record.id,
     type: record.type,
     type_label: TYPE_LABELS[record.type] ?? record.type,
@@ -161,6 +158,7 @@ function pageRecord(record, entry, markdown, recordsById, publicById, urlIndex, 
     internal_path: entry.internal_path,
     body_html: markdown?.html ?? "",
     toc: markdown?.toc ?? [],
+    footnotes: markdown?.footnotes ?? [],
     published_at: record.data?.published_at ?? null,
     author: record.data?.author ?? null,
     tags: record.data?.tags ?? [],
@@ -171,6 +169,13 @@ function pageRecord(record, entry, markdown, recordsById, publicById, urlIndex, 
     area_label: AREA_LABELS[record.area] ?? null,
     ...parentContext(record, recordsById),
   };
+  page.reader = buildReaderData({
+    record,
+    publicRecords: [...publicById.values()],
+    urlIndex,
+    site,
+  });
+  return page;
 }
 
 function taxonomyPage(entry, index, publicRecords, urlIndex) {
@@ -292,12 +297,12 @@ export async function generateStaticSite({
   for (const entry of urlIndex.entries) {
     const record = publicById.get(entry.id);
     const page = record
-      ? pageRecord(record, entry, markdownById.get(record.id), recordsById, publicById, urlIndex, index)
+      ? pageRecord(record, entry, markdownById.get(record.id), recordsById, publicById, urlIndex, index, site)
       : taxonomyPage(entry, index, publicRecords, urlIndex);
     pages.push(page);
     files.push({
       path: outputPathFromInternal(entry.internal_path),
-      content: render(page.type === "taxonomy_section" ? "list.njk" : "content.njk", {
+      content: render(page.type === "taxonomy_section" ? "list.njk" : page.reader ? "reader.njk" : "content.njk", {
         ...common,
         page,
       }),
@@ -375,6 +380,8 @@ export async function generateStaticSite({
     }))
     .sort((left, right) => left.title.localeCompare(right.title, "ko") || left.id.localeCompare(right.id, "en"));
   files.push({ path: "search-index.json", content: jsonForHtml(search), source_ids: search.map((item) => item.id) });
+  files.push({ path: "search/index.html", content: render("search.njk", { ...common, page: { title: "검색", nav_key: "search", breadcrumbs: [breadcrumb("홈", withBasePath("/", urlIndex.base_path)), breadcrumb("검색")] }, search_index_url: withBasePath("/search-index.json", urlIndex.base_path) }), source_ids: search.filter((item) => item.id).map((item) => item.id) });
+  files.push({ path: "404.html", content: render("404.njk", { ...common, page: { title: "페이지를 찾을 수 없습니다", nav_key: null, breadcrumbs: [breadcrumb("홈", withBasePath("/", urlIndex.base_path)), breadcrumb("페이지를 찾을 수 없습니다")] } }), source_ids: [] });
 
   const sitemapPaths = [
     ...fixedPages(urlIndex.base_path).map((item) => item.url),
@@ -387,6 +394,9 @@ export async function generateStaticSite({
     .map((path) => absolutePublicUrl(urlIndex, path));
   files.push({ path: "sitemap.xml", content: sitemapXml(sitemapUrls), source_ids: pages.map((page) => page.id) });
   files.push({ path: "assets/site.css", content: await readFile(join(SITE_ROOT, "assets", "site.css"), "utf8"), source_ids: [] });
+  files.push({ path: "assets/reader.js", content: await readFile(join(SITE_ROOT, "assets", "reader.js"), "utf8"), source_ids: [] });
+  files.push({ path: "assets/search.js", content: await readFile(join(SITE_ROOT, "assets", "search.js"), "utf8"), source_ids: [] });
+  files.push({ path: "robots.txt", content: `User-agent: *\nAllow: ${urlIndex.base_path}\n`, source_ids: [] });
 
   for (const redirect of redirects) {
     files.push({

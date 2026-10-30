@@ -13,6 +13,7 @@ const CONTENT_TYPES = Object.freeze({
   ".jpg": "image/jpeg",
   ".json": "application/json; charset=utf-8",
   ".pdf": "application/pdf",
+  ".js": "text/javascript; charset=utf-8",
   ".png": "image/png",
   ".webp": "image/webp",
   ".xml": "application/xml; charset=utf-8",
@@ -119,21 +120,23 @@ export async function startPreviewServer({ root, port = 0 }) {
       }
       const relativePath = (basePath === "/" ? path : path.slice(basePath.length - 1)).replace(/^\//u, "");
       const file = await previewFile(distRoot, relativePath);
-      if (!file) {
+      const notFound = file ? null : await previewFile(distRoot, "404.html");
+      const responseFile = file ?? notFound;
+      if (!responseFile) {
         send(response, 404, "Not Found");
         return;
       }
-      response.writeHead(200, {
+      response.writeHead(file ? 200 : 404, {
         "cache-control": "no-store",
-        "content-length": file.size,
-        "content-type": CONTENT_TYPES[extname(file.path).toLowerCase()] ?? "application/octet-stream",
+        "content-length": responseFile.size,
+        "content-type": CONTENT_TYPES[extname(responseFile.path).toLowerCase()] ?? "application/octet-stream",
         "content-security-policy": "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
         "referrer-policy": "no-referrer",
         "x-content-type-options": "nosniff",
         "x-frame-options": "DENY",
       });
       if (request.method === "HEAD") response.end();
-      else createReadStream(file.path).pipe(response);
+      else createReadStream(responseFile.path).pipe(response);
     } catch {
       send(response, 400, "Bad Request");
     }

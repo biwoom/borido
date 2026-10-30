@@ -1,0 +1,51 @@
+{% extends "base.njk" %}
+{% macro tree_nodes(nodes) %}
+  <ul class="tree-level">
+  {% for node in nodes %}
+    <li class="tree-item tree-{{ node.type }}">
+      {% if node.children.length %}
+      <details{% if node.open %} open{% endif %}>
+        <summary>{{ node.title }}</summary>
+        <a class="tree-overview" href="{{ node.url }}"{% if node.current %} aria-current="page"{% endif %}>개요 보기</a>
+        {{ tree_nodes(node.children) }}
+      </details>
+      {% else %}
+      <a href="{{ node.url }}"{% if node.current %} aria-current="page"{% endif %}>{{ node.title }}</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+{% endmacro %}
+{% block content %}
+<nav class="area-switch" aria-label="자료 영역">
+  {% for area in page.reader.areas %}<a href="{{ area.url }}"{% if area.current %} aria-current="page"{% endif %}{% if area.multiple %} title="명시된 대응 문서가 여러 개여서 영역 개요로 이동합니다"{% endif %}>{{ area.label }}</a>{% endfor %}
+</nav>
+<div class="reader-layout">
+  <nav class="reader-tree" id="reader-tree" aria-label="현재 자료 트리">
+    <h2><a href="{{ page.reader.area.url }}">{{ page.reader.area.title }}</a></h2>
+    {% if page.reader.tree.length %}{{ tree_nodes(page.reader.tree) }}{% else %}<p class="empty">공개 자료가 없습니다.</p>{% endif %}
+  </nav>
+  <article class="reader-content">
+    <p class="eyebrow">{{ page.type_label }} · {{ page.text_title }}{% if page.area_label %} · {{ page.area_label }}{% endif %}</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}<p class="description">{{ page.description }}</p>{% endif %}
+    <div class="document-tools" role="toolbar" aria-label="문서 도구">
+      {% if page.toc.length %}<button type="button" data-panel="toc" aria-expanded="false">목차</button>{% endif %}
+      {% if page.footnotes.length %}<button type="button" data-panel="footnotes" aria-expanded="false">각주</button>{% endif %}
+      {% if page.reader.source_url %}<a href="{{ page.reader.source_url }}">GitHub에서 원본 보기</a>{% endif %}
+      <button type="button" class="tree-toggle" aria-controls="reader-tree" aria-expanded="true">자료 트리</button>
+    </div>
+    <aside class="reader-panel" hidden aria-live="polite">
+      <div class="reader-panel-head"><h2></h2><button type="button" class="panel-close" aria-label="패널 닫기">닫기</button></div>
+      <div class="reader-panel-content"></div>
+    </aside>
+    <div class="prose">{{ page.body_html | safe }}</div>
+    {% if page.reader.previous or page.reader.next %}<nav class="document-pagination" aria-label="문서 이동">
+      {% if page.reader.previous %}<a class="previous" href="{{ page.reader.previous.url }}"><span>이전</span>{{ page.reader.previous.title }}</a>{% endif %}
+      {% if page.reader.next %}<a class="next" href="{{ page.reader.next.url }}"><span>다음</span>{{ page.reader.next.title }}</a>{% endif %}
+    </nav>{% endif %}
+    <div class="footnotes-source" hidden>{% for note in page.footnotes %}<span data-footnote="{{ note.id }}">{{ note.number }}. {{ note.label }}</span>{% endfor %}</div>
+  </article>
+</div>
+<script src="{{ site.base_path }}assets/reader.js" defer></script>
+{% endblock %}

@@ -54,6 +54,7 @@ export {
   outputPathFromInternal,
   plainText,
 } from "../site/index.js";
+export { buildReaderData, githubSourceUrl } from "../site/reader.js";
 export { buildProject, snapshotBuildInputs } from "../build/index.js";
 export {
   auditStagedOutput,

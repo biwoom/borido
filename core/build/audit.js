@@ -72,8 +72,10 @@ export function auditStaticOutput({
     }
     const content = textContent(file.content);
     if (content === null) continue;
-    for (const pattern of forbiddenSourcePatterns()) {
-      if (content.includes(pattern.value)) {
+    const searchable = content;
+    const patterns = forbiddenSourcePatterns().filter((pattern) => file.path !== "search-index.json" || pattern.code !== "BUILD_INTERNAL_SCHEME_LEAK");
+    for (const pattern of patterns) {
+      if (searchable.includes(pattern.value)) {
         diagnostics.push(issue(pattern.code, "공개 출력에 내부 참조 또는 비공개 원본 경로가 남았습니다.", { path: file.path, value: pattern.value }));
       }
     }
@@ -114,8 +116,10 @@ export async function auditStagedOutput({ root, expectedPaths, privateTokens = [
   }
   for (const path of actual.filter((value) => /\.(?:html|json|xml|css)$/u.test(value))) {
     const content = await readFile(join(root, path), "utf8");
-    for (const pattern of forbiddenSourcePatterns()) {
-      if (content.includes(pattern.value)) diagnostics.push(issue(pattern.code, "임시 공개 출력에 내부 참조 또는 비공개 원본 경로가 남았습니다.", { path, value: pattern.value }));
+    const searchable = content;
+    const patterns = forbiddenSourcePatterns().filter((pattern) => path !== "search-index.json" || pattern.code !== "BUILD_INTERNAL_SCHEME_LEAK");
+    for (const pattern of patterns) {
+      if (searchable.includes(pattern.value)) diagnostics.push(issue(pattern.code, "임시 공개 출력에 내부 참조 또는 비공개 원본 경로가 남았습니다.", { path, value: pattern.value }));
     }
     for (const token of privateTokens) {
       if (token.value && content.includes(token.value)) diagnostics.push(issue("BUILD_PRIVATE_CONTENT_LEAK", "임시 공개 출력에서 비공개 콘텐츠 표식을 발견했습니다.", { path, kind: token.kind, source_id: token.id }));

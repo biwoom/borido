@@ -39,12 +39,16 @@ describe("W14 page templates and public indexes", () => {
     expect(result.files.map((file) => file.path)).toEqual(expect.arrayContaining([
       "index.html", "texts/dhammapada/index.html", "stories/golden-story/index.html",
       "blog/news/index.html", "pages/about/index.html", "texts/categories/sutra/index.html",
-      "texts/index.html", "search-index.json", "sitemap.xml", "assets/site.css",
+      "texts/index.html", "search/index.html", "search-index.json", "404.html", "robots.txt",
+      "assets/site.css", "assets/reader.js", "assets/search.js",
     ]));
     const page = result.files.find((file) => file.path === "pages/about/index.html").content;
     expect(page).toContain("소개 &lt;script&gt;");
     expect(page).not.toContain("소개 <script>");
     expect(page).toContain('href="/borido/assets/site.css"');
+    const searchPage = result.files.find((file) => file.path === "search/index.html").content;
+    expect(searchPage).toContain('href="/borido/search/" aria-current="page"');
+    expect(searchPage).toContain('data-search-index="/borido/search-index.json"');
     expect(result.search.find((item) => item.id === ids.story)).toMatchObject({ text: "본문 story", url: "/borido/stories/golden-story/" });
     expect(result.sitemap_urls).toContain("https://example.test/borido/stories/golden-story/");
   });
